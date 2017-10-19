@@ -56,7 +56,6 @@ var info = blessed.list({
     },
     style: {
         selected:{
-            bold: true,
             underline:true
         },
         fg: 'white',
