@@ -19,15 +19,16 @@ screen.key(['escape', 'C-c'], function(ch, key) {
 });
 screen.title = 'TERA Terminal Client';
 setInterval(() => {
-    screen.realloc()
+    //screen.realloc()
     screen.render()
-}, 1000);
+}, 5000);
 //Menu
 var menu = blessed.list({
     top: '0',
     left: '0',
     width: '20%',
     height: '30%',
+    align: 'center',
     items: ["Home", "Chat", "Friend List", "Inventory", "Crafting", "Trade Broker", "Inspector"],
     tags: true,
     mouse: true,
@@ -88,6 +89,7 @@ var content = blessed.log({
     tags: true,
     keys: true,
     mouse: true,
+    scrollbar:true,
     border: {
         type: 'line'
     },
@@ -179,22 +181,21 @@ const describe = (() => {
 //private = 11-18, p-notice = 21, emote = 26, global = 27, r-notice = 25,
 //raid = 32, megaphone = 213, guild-adv = 214
 chatChannels = {
-    0: '{#silver-fg}[Say]',
+    0: '{#FFFFFE-fg}[Say]',
     1: '{#48ADFF-fg}[Party]',
     2: '{#12DE3A-fg}[Guild]',
     3: '{#896BE3-fg}[Area]',
     4: '{#BD9633-fg}[Trade]',
     9: '{#FFBD00-fg}[Greeting]',
     26: '{#FFC0CB-fg}',
-    27: '{yellow-fg}[Global]',
-    213: '{yellow-fg}[Megaphone]',
+    27: '{#FFFF01-fg}[Global]',
+    213: '{#FFFF01-fg}[Megaphone]',
     214: '{#6DBA6C-fg}[Guild-Ad]'
 }
 
 function parseTeraChat(evt) {
     msg = chatChannels[evt.channel]
-    if (screenshotmode) msg += '[Redacted.Name]: '
-    else msg += '[' + evt.authorName + ']: '
+    msg += '[' + evt.authorName + ']: '
     msg += npmstring(evt.message).stripTags().decodeHTMLEntities().s
     return msg + "{/}"
 }
