@@ -2,7 +2,10 @@ const fs = require('fs')
 const config = require('./config/config.json')
 const servers = require('./config/servers.json')
 const webClient = require('tera-auth-ticket')
-const { Connection, FakeClient } = require('tera-proxy-game')
+const {
+    Connection,
+    FakeClient
+} = require('tera-proxy-game')
 var npmstring = require('string')
 var blessed = require('blessed')
 var screenshotmode = true
@@ -15,7 +18,7 @@ screen.key(['escape', 'C-c'], function(ch, key) {
     return process.exit(0);
 });
 screen.title = 'TERA Terminal Client';
-setInterval(()=>{
+setInterval(() => {
     screen.realloc()
     screen.render()
 }, 1000);
@@ -52,17 +55,18 @@ var info = blessed.list({
     width: '20%',
     height: '70%',
     items: ["Current Information",
-            "Character Name:",
-            " > Redacted.Name",
-            "Location:",
-            " > Highwatch"],
+        "Character Name:",
+        " > Redacted.Name",
+        "Location:",
+        " > Highwatch"
+    ],
     tags: true,
     border: {
         type: 'line'
     },
     style: {
-        selected:{
-            underline:true
+        selected: {
+            underline: true
         },
         fg: 'white',
         bg: 'black',
@@ -88,7 +92,7 @@ var content = blessed.log({
         type: 'line'
     },
     padding: {
-        bottom:0
+        bottom: 0
     },
     style: {
         fg: 'white',
@@ -112,7 +116,7 @@ var chat = blessed.textbox({
         type: 'line'
     },
     padding: {
-        top:0
+        top: 0
     },
     style: {
         fg: 'white',
@@ -133,7 +137,7 @@ var chatpanel = blessed.box({
         type: 'line'
     },
     padding: {
-        top:0
+        top: 0
     },
     style: {
         fg: 'white',
@@ -147,169 +151,172 @@ screen.append(chatpanel);
 screen.append(chat);
 
 const describe = (() => {
-	const races = ['Human', 'High Elf', 'Aman', 'Castanic', 'Popori', 'Baraka']
-	const genders = ['Male', 'Female']
-	const classes = ['Warrior', 'Lancer', 'Slayer', 'Berserker', 'Sorcerer', 'Archer','Priest', 'Mystic', 'Reaper', 'Gunner', 'Brawler', 'Ninja', 'Valkyrie']
+    const races = ['Human', 'High Elf', 'Aman', 'Castanic', 'Popori', 'Baraka']
+    const genders = ['Male', 'Female']
+    const classes = ['Warrior', 'Lancer', 'Slayer', 'Berserker', 'Sorcerer', 'Archer', 'Priest', 'Mystic', 'Reaper', 'Gunner', 'Brawler', 'Ninja', 'Valkyrie']
 
-	return function describe(character) {
-		let description = 'Level '
-		description += (character.level+" ")
-		const race = races[character.race] || '?'
-		const gender = genders[character.gender] || '?'
+    return function describe(character) {
+        let description = 'Level '
+        description += (character.level + " ")
+        const race = races[character.race] || '?'
+        const gender = genders[character.gender] || '?'
 
-		if (character.race < 4) {
-			description += `${race} ${gender}`
-		} else {
-			if (character.race === 4 && character.gender === 1) {
-				description += 'Elin'
-			} else {
-				description += race
-			}
-		}
+        if (character.race < 4) {
+            description += `${race} ${gender}`
+        } else {
+            if (character.race === 4 && character.gender === 1) {
+                description += 'Elin'
+            } else {
+                description += race
+            }
+        }
 
-		description += ' ' + (classes[character['class']] || '?')
-		return description
-	}
+        description += ' ' + (classes[character['class']] || '?')
+        return description
+    }
 })()
 //say = 0, party = 1, guild = 2, area = 3, trade = 4, greet = 9,
 //private = 11-18, p-notice = 21, emote = 26, global = 27, r-notice = 25,
 //raid = 32, megaphone = 213, guild-adv = 214
 chatChannels = {
-    0:'{#silver-fg}[Say]',
-    1:'{#48ADFF-fg}[Party]',
-    2:'{#12DE3A-fg}[Guild]',
-    3:'{#896BE3-fg}[Area]',
-    4:'{#BD9633-fg}[Trade]',
-    9:'{#FFBD00-fg}[Greeting]',
-    26:'{#FFC0CB-fg}',
-    27:'{yellow-fg}[Global]',
-    213:'{yellow-fg}[Megaphone]',
-    214:'{#6DBA6C-fg}[Guild-Ad]'
+    0: '{#silver-fg}[Say]',
+    1: '{#48ADFF-fg}[Party]',
+    2: '{#12DE3A-fg}[Guild]',
+    3: '{#896BE3-fg}[Area]',
+    4: '{#BD9633-fg}[Trade]',
+    9: '{#FFBD00-fg}[Greeting]',
+    26: '{#FFC0CB-fg}',
+    27: '{yellow-fg}[Global]',
+    213: '{yellow-fg}[Megaphone]',
+    214: '{#6DBA6C-fg}[Guild-Ad]'
 }
-function parseTeraChat(evt){
+
+function parseTeraChat(evt) {
     msg = chatChannels[evt.channel]
-    if(screenshotmode) msg += '[Redacted.Name]: '
-    else msg += '['+evt.authorName+']: '
+    if (screenshotmode) msg += '[Redacted.Name]: '
+    else msg += '[' + evt.authorName + ']: '
     msg += npmstring(evt.message).stripTags().decodeHTMLEntities().s
-    return msg+"{/}"
+    return msg + "{/}"
 }
 
 const srv = servers[config.server]
 const web = new webClient(srv.srv, config.email, config.pass)
 web.getLogin((err, data) => {
-	if (err) return
+    if (err) return
 
-	const connection = new Connection()
-	const client = new FakeClient(connection)
-	const srvConn = connection.connect(client, { host: srv.host, port: srv.port })
+    const connection = new Connection()
+    const client = new FakeClient(connection)
+    const srvConn = connection.connect(client, {
+        host: srv.host,
+        port: srv.port
+    })
 
-	let closed = false
+    let closed = false
 
-	function closeClient() {
-		if (closed) return
-		closed = true
+    function closeClient() {
+        if (closed) return
+        closed = true
         console.log("Shutting down TERA-CLI...")
-		client.close()
-		setImmediate(() => {
+        client.close()
+        setImmediate(() => {
             console.log("Exiting")
-			process.exit()
-		})
-	}
+            process.exit()
+        })
+    }
 
-	connection.dispatch.setProtocolVersion(config.ProtocolVersion)
+    connection.dispatch.setProtocolVersion(config.ProtocolVersion)
 
-	connection.dispatch.load('<>', function coreModule(dispatch) {
-		client.on('connect', () => {
-			dispatch.toServer('C_LOGIN_ARBITER', 2, {
-				unk1: 0,
-				unk2: 0,
-				language: 2,
-				patchVersion: 6103,
-				name: data.name,
-				ticket: new Buffer(data.ticket)
-			})
-		})
+    connection.dispatch.load('<>', function coreModule(dispatch) {
+        client.on('connect', () => {
+            dispatch.toServer('C_LOGIN_ARBITER', 2, {
+                unk1: 0,
+                unk2: 0,
+                language: 2,
+                patchVersion: 6103,
+                name: data.name,
+                ticket: new Buffer(data.ticket)
+            })
+        })
 
-		dispatch.hook('S_LOGIN_ACCOUNT_INFO', 1, () => {
-			dispatch.toServer('C_GET_USER_LIST', 1)
-		})
+        dispatch.hook('S_LOGIN_ACCOUNT_INFO', 1, () => {
+            dispatch.toServer('C_GET_USER_LIST', 1)
+        })
 
-		dispatch.hook('S_GET_USER_LIST', 5, (event) => {
-			const characters = new Map()
-			for (const character of event.characters) {
-                if(screenshotmode){
+        dispatch.hook('S_GET_USER_LIST', 5, (event) => {
+            const characters = new Map()
+            for (const character of event.characters) {
+                if (screenshotmode) {
                     characters.set(character.name.toLowerCase(), {
                         id: character.id,
                         description: `Redacted.Name [${describe(character)}]`
                     })
-                }
-                else{
+                } else {
                     characters.set(character.name.toLowerCase(), {
                         id: character.id,
                         description: `${character.name} [${describe(character)}]`
                     })
                 }
-			}
+            }
             content.pushLine("Characters:")
             for (const char of characters.values()) {
-                if(screenshotmode) content.pushLine(`> ${char.description} (id: redacted_id)`)
-                else content.pushLine(`> ${char.description} (id: redacted_id)`)
+                if (screenshotmode) content.pushLine(`> ${char.description} (id: redacted_id)`)
+                else content.pushLine(`> ${char.description} (id: ${char.id})`)
             }
-			const character = characters.get(config.character.toLowerCase())
-			if (!character) {
-				content.pushLine(`[client] no character "${config.character}"`)
-			} else {
-                if(screenshotmode) content.pushLine(`[client] logging onto ${character.description} (id: redacted_id)`)
-				else content.pushLine(`[client] logging onto ${character.description} (id: ${character.id})`)
-				dispatch.toServer('C_SELECT_USER', 1, {
-					id: character.id,
-					unk: 0
-				})
-			}
-		})
-		dispatch.hook('S_LOAD_TOPO', 2, () => {
-			dispatch.toServer('C_LOAD_TOPO_FIN',1)
-		})
+            const character = characters.get(config.character.toLowerCase())
+            if (!character) {
+                content.pushLine(`[client] no character "${config.character}"`)
+            } else {
+                if (screenshotmode) content.pushLine(`[client] logging onto ${character.description} (id: redacted_id)`)
+                else content.pushLine(`[client] logging onto ${character.description} (id: ${character.id})`)
+                dispatch.toServer('C_SELECT_USER', 1, {
+                    id: character.id,
+                    unk: 0
+                })
+            }
+        })
+        dispatch.hook('S_LOAD_TOPO', 2, () => {
+            dispatch.toServer('C_LOAD_TOPO_FIN', 1)
+        })
 
-		dispatch.hook('S_PING', 1, () => {
-			dispatch.toServer('C_PONG',1)
-		})
+        dispatch.hook('S_PING', 1, () => {
+            dispatch.toServer('C_PONG', 1)
+        })
 
-		dispatch.hook('S_SIMPLE_TIP_REPEAT_CHECK', 2, (event) => {
-			dispatch.toServer('C_SIMPLE_TIP_REPEAT_CHECK', 1, {
-				id : event.id
-			})
-		})
+        dispatch.hook('S_SIMPLE_TIP_REPEAT_CHECK', 2, (event) => {
+            dispatch.toServer('C_SIMPLE_TIP_REPEAT_CHECK', 1, {
+                id: event.id
+            })
+        })
         dispatch.hook('S_CHAT', 1, (event) => {
-			content.pushLine(parseTeraChat(event))
-		})
-		client.on('close', () => {
-			closeClient()
-		})
-	})
+            content.pushLine(parseTeraChat(event))
+        })
+        client.on('close', () => {
+            closeClient()
+        })
+    })
     /*
-	fs.readdirSync('./modules/').forEach(file => {
-		connection.dispatch.load('./modules/' + file, module)
-	})*/
+    fs.readdirSync('./modules/').forEach(file => {
+        connection.dispatch.load('./modules/' + file, module)
+    })*/
     //connection.dispatch.load('./modules/teraCLI', module, closeClient)
-	srvConn.setTimeout(10 * 1000)
+    srvConn.setTimeout(10 * 1000)
 
-	srvConn.on('connect', () => {
-        if(screenshotmode) content.pushLine(`Connected to <redacted_ip:redacted_port> aka Celestial Mount Tempest Ascension Forest`)
-		else content.pushLine(`Connected to <${srvConn.remoteAddress}:${srvConn.remotePort}> aka ${config.server}`)
-	})
+    srvConn.on('connect', () => {
+        if (screenshotmode) content.pushLine(`Connected to <redacted_ip:redacted_port> aka Celestial Mount Tempest Ascension Forest`)
+        else content.pushLine(`Connected to <${srvConn.remoteAddress}:${srvConn.remotePort}> aka ${config.server}`)
+    })
 
-	srvConn.on('timeout', () => {
+    srvConn.on('timeout', () => {
         content.pushLine('<timeout>')
-		closeClient()
-	})
+        closeClient()
+    })
 
-	srvConn.on('close', () => {
-		content.pushLine('<disconnected>')
-		process.exit()
-	})
+    srvConn.on('close', () => {
+        content.pushLine('<disconnected>')
+        process.exit()
+    })
 
-	srvConn.on('error', (err) => {
-		content.pushLine(err)
-	})
+    srvConn.on('error', (err) => {
+        content.pushLine(err)
+    })
 })
