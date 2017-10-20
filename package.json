@@ -1,6 +1,7 @@
 {
 	"dependencies": {
 		"blessed": "^0.1.81",
+		"string": "^3.3.3",
 		"tera-auth-ticket": "github:mathicha/tera-auth-ticket",
 		"tera-data": "github:meishuu/tera-data",
 		"tera-data-parser": "github:meishuu/tera-data-parser-js",
