@@ -19,7 +19,7 @@ var menu = blessed.list({
     left: '0',
     width: '20%',
     height: '30%',
-    items: ["Home", "Trade Broker", "Chat", "Inventory", "Crafting"],
+    items: ["Home", "Chat", "Friend List", "Inventory", "Crafting", "Trade Broker", "Inspector"],
     tags: true,
     mouse: true,
     autoCommandKeys: true,
@@ -67,3 +67,74 @@ var info = blessed.list({
 });
 info.select(0);
 screen.append(info);
+
+//contentbox
+var content = blessed.box({
+    content: "[Name.Redacted] this is a chat message\n[Redacted.Name] yes wow very terms of service",
+    top: '0%',
+    left: '20%',
+    width: '80%',
+    height: '100%',
+    tags: true,
+    keys: true,
+    border: {
+        type: 'line'
+    },
+    padding: {
+        bottom:-1
+    },
+    style: {
+        fg: 'white',
+        bg: 'black',
+        border: {
+            fg: '#f0f0f0'
+        }
+    }
+});
+screen.append(content);
+
+var chat = blessed.textbox({
+    bottom: '0',
+    left: '15%',
+    width: '85%',
+    height: 'shrink',
+    tags: true,
+    mouse: true,
+    inputOnFocus: true,
+    border: {
+        type: 'line'
+    },
+    padding: {
+        top:0
+    },
+    style: {
+        fg: 'white',
+        bg: 'black',
+        border: {
+            fg: '#f0f0f0'
+        }
+    }
+});
+var chatpanel = blessed.box({
+    content: "All Chat",
+    bottom: '0',
+    left: '0%',
+    width: '15%',
+    height: 'shrink',
+    tags: true,
+    border: {
+        type: 'line'
+    },
+    padding: {
+        top:0
+    },
+    style: {
+        fg: 'white',
+        bg: 'black',
+        border: {
+            fg: '#f0f0f0'
+        }
+    }
+});
+content.append(chatpanel);
+content.append(chat);
