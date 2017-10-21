@@ -291,6 +291,14 @@ web.getLogin((err, data) => {
         dispatch.hook('S_CHAT', 1, (event) => {
             content.pushLine(parseTeraChat(event))
         })
+        chat.on('submit', ()=>{
+            var msg = chat.getValue()
+            dispatch.toServer('C_CHAT', 1, {
+                channel: 2,
+                message: msg
+            })
+            chat.clearValue()
+        })
         client.on('close', () => {
             closeClient()
         })
