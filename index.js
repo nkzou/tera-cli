@@ -298,6 +298,7 @@ web.getLogin((err, data) => {
                 message: msg
             })
             chat.clearValue()
+            chat.focus()
         })
         client.on('close', () => {
             closeClient()
