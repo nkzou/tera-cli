@@ -13,15 +13,15 @@ var screen = blessed.screen({
     smartCSR: true,
     autoPadding: true,
     dockBorders: true
-});
+})
 screen.key(['escape', 'C-c'], function(ch, key) {
-    return process.exit(0);
-});
-screen.title = 'TERA Terminal Client';
+    return process.exit(0)
+})
+screen.title = 'TERA Terminal Client'
 setInterval(() => {
     //screen.realloc()
     screen.render()
-}, 5000);
+}, 5000)
 //Menu
 var menu = blessed.list({
     top: '0',
@@ -47,8 +47,8 @@ var menu = blessed.list({
             fg: '#f0f0f0'
         }
     }
-});
-screen.append(menu);
+})
+screen.append(menu)
 //info-panel
 var info = blessed.list({
     top: '30%',
@@ -75,9 +75,9 @@ var info = blessed.list({
             fg: '#f0f0f0'
         }
     }
-});
-info.select(0);
-screen.append(info);
+})
+info.select(0)
+screen.append(info)
 
 //contentbox
 var content = blessed.log({
@@ -103,8 +103,8 @@ var content = blessed.log({
             fg: '#f0f0f0'
         }
     }
-});
-screen.append(content);
+})
+screen.append(content)
 
 var chat = blessed.textbox({
     top: '90%',
@@ -127,7 +127,7 @@ var chat = blessed.textbox({
             fg: '#f0f0f0'
         }
     }
-});
+})
 var chatpanel = blessed.box({
     content: "All Chat",
     top: '90%',
@@ -148,9 +148,9 @@ var chatpanel = blessed.box({
             fg: '#f0f0f0'
         }
     }
-});
-screen.append(chatpanel);
-screen.append(chat);
+})
+screen.append(chatpanel)
+screen.append(chat)
 
 const describe = (() => {
     const races = ['Human', 'High Elf', 'Aman', 'Castanic', 'Popori', 'Baraka']
@@ -312,7 +312,7 @@ web.getLogin((err, data) => {
     srvConn.setTimeout(10 * 1000)
 
     srvConn.on('connect', () => {
-        if (screenshotmode) content.pushLine(`Connected to <redacted_ip:redacted_port> aka Celestial Mount Tempest Ascension Forest`)
+        if (screenshotmode) content.pushLine(`Connected to <redacted_ip:redacted_port> aka Celestial Mount Tempest Valley Forest`)
         else content.pushLine(`Connected to <${srvConn.remoteAddress}:${srvConn.remotePort}> aka ${config.server}`)
     })
 
