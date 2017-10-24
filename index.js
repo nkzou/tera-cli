@@ -29,7 +29,7 @@ var menu = blessed.list({
     width: '20%',
     height: '30%',
     align: 'center',
-    items: ["Home", "Chat", "Friend List", "Inventory", "Crafting", "Trade Broker", "Inspector"],
+    items: ["Home", "Chat", "Friend/Guild List", "Inventory", "Crafting", "Trade Broker", "Inspector"],
     tags: true,
     mouse: true,
     autoCommandKeys: true,
