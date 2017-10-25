@@ -4,4 +4,6 @@
 	"pass": "hunter2",
 	"character": "Ban.Pls",
 	"ProtocolVersion": 321553
+	"ss_mode": "true"
 }
+//ss mode hides most identifying information- character names, game servers, ip:port's, etc. DOES NOT make it impossible to identify the user.
