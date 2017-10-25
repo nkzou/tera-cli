@@ -14,9 +14,7 @@ var screen = blessed.screen({
     autoPadding: true,
     dockBorders: true
 })
-screen.key(['escape', 'C-c'], function(ch, key) {
-    return process.exit(0)
-})
+
 screen.title = 'TERA Terminal Client'
 setInterval(() => {
     //screen.realloc()
@@ -217,13 +215,16 @@ web.getLogin((err, data) => {
     function closeClient() {
         if (closed) return
         closed = true
-        console.log("Shutting down TERA-CLI...")
+        content.pushLine("Shutting down TERA-CLI...")
         client.close()
-        setImmediate(() => {
-            console.log("Exiting")
+        setTimeout(() => {
+            content.pushLine("Exiting")
             process.exit()
-        })
+        }, 500)
     }
+    screen.key(['escape', 'C-c'], function(ch, key) {
+        return closeClient()
+    })
 
     connection.dispatch.setProtocolVersion(config.ProtocolVersion)
 
