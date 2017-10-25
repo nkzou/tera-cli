@@ -30,7 +30,8 @@ var menu = blessed.list({
     items: ["Home", "Chat", "Friend/Guild List", "Inventory", "Crafting", "Trade Broker", "Inspector"],
     tags: true,
     mouse: true,
-    autoCommandKeys: true,
+    interactive: true,
+    keys: true,
     border: {
         type: 'line'
     },
@@ -102,8 +103,6 @@ var content = blessed.log({
         }
     }
 })
-screen.append(content)
-
 var chat = blessed.textbox({
     top: '90%',
     left: '35%',
@@ -127,7 +126,7 @@ var chat = blessed.textbox({
     }
 })
 var chatpanel = blessed.box({
-    content: "All Chat",
+    content: "{#12DE3A-fg}[Guild]{/}",
     top: '90%',
     left: '20%',
     width: '15%',
@@ -147,9 +146,48 @@ var chatpanel = blessed.box({
         }
     }
 })
+screen.append(content)
 screen.append(chatpanel)
 screen.append(chat)
 
+var plist = blessed.list({
+    top: '0%',
+    left: '20%',
+    width: '80%',
+    height: '90%',
+    items: [],
+    tags: true,
+    border: {
+        type: 'line'
+    },
+    style: {
+        selected: {
+            underline: true
+        },
+        fg: 'white',
+        bg: 'black',
+        border: {
+            fg: '#f0f0f0'
+        }
+    }
+})
+var elements = new Set([content,chatpanel,chat,plist])
+menu.on('select', (item)=>{
+    var name = item.content
+    for(var e in elements){
+        screen.remove(e)
+    }
+    if(name === "Chat"){
+        screen.append(content)
+        screen.append(chatpanel)
+        screen.append(chat)
+        screen.render()
+    }
+    else if(name === "Friend/Guild List"){
+        screen.append(plist)
+        screen.render()
+    }
+})
 //say = 0, party = 1, guild = 2, area = 3, trade = 4, greet = 9,
 //private = 11-18, p-notice = 21, emote = 26, global = 27, r-notice = 25,
 //raid = 32, megaphone = 213, guild-adv = 214
