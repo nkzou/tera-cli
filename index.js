@@ -146,16 +146,12 @@ var chatpanel = blessed.box({
         }
     }
 })
-screen.append(content)
-screen.append(chatpanel)
-screen.append(chat)
-
 var plist = blessed.list({
     top: '0%',
     left: '20%',
     width: '80%',
-    height: '90%',
-    items: [],
+    height: '100%',
+    items: ["tes"],
     tags: true,
     border: {
         type: 'line'
@@ -171,22 +167,30 @@ var plist = blessed.list({
         }
     }
 })
-var elements = new Set([content,chatpanel,chat,plist])
+
+screen.append(content)
+screen.append(chatpanel)
+screen.append(chat)
+screen.append(plist)
+
+function hideAll(){
+    content.hide()
+    chat.hide()
+    chatpanel.hide()
+    plist.hide()
+}
 menu.on('select', (item)=>{
     var name = item.content
-    for(var e in elements){
-        screen.remove(e)
-    }
+    hideAll()
     if(name === "Chat"){
-        screen.append(content)
-        screen.append(chatpanel)
-        screen.append(chat)
-        screen.render()
+        content.show()
+        chat.show()
+        chatpanel.show()
     }
     else if(name === "Friend/Guild List"){
-        screen.append(plist)
-        screen.render()
+        plist.show()
     }
+    screen.render()
 })
 //say = 0, party = 1, guild = 2, area = 3, trade = 4, greet = 9,
 //private = 11-18, p-notice = 21, emote = 26, global = 27, r-notice = 25,
