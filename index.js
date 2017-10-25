@@ -146,19 +146,22 @@ var chatpanel = blessed.box({
         }
     }
 })
-var plist = blessed.list({
+var friend_list = blessed.list({
     top: '0%',
     left: '20%',
-    width: '80%',
+    width: '40%',
     height: '100%',
-    items: ["tes"],
+    items: ["friendwan", "frentwo"],
     tags: true,
+    mouse: true,
+    interactive: true,
+    keys: true,
     border: {
         type: 'line'
     },
     style: {
         selected: {
-            underline: true
+            bold: true
         },
         fg: 'white',
         bg: 'black',
@@ -167,31 +170,46 @@ var plist = blessed.list({
         }
     }
 })
-
+var guild_list = blessed.list({
+    top: '0%',
+    left: '60%',
+    width: '40%',
+    height: '100%',
+    items: ["guildiewan", "guildietwo"],
+    tags: true,
+    mouse: true,
+    interactive: true,
+    keys: true,
+    border: {
+        type: 'line'
+    },
+    style: {
+        selected: {
+            bold: true
+        },
+        fg: 'white',
+        bg: 'black',
+        border: {
+            fg: '#f0f0f0'
+        }
+    }
+})
 screen.append(content)
 screen.append(chatpanel)
 screen.append(chat)
-screen.append(plist)
+screen.append(friend_list)
+screen.append(guild_list)
 
 function hideAll(){
     content.hide()
     chat.hide()
     chatpanel.hide()
-    plist.hide()
+    friend_list.hide()
+    guild_list.hide()
 }
-menu.on('select', (item)=>{
-    var name = item.content
-    hideAll()
-    if(name === "Chat"){
-        content.show()
-        chat.show()
-        chatpanel.show()
-    }
-    else if(name === "Friend/Guild List"){
-        plist.show()
-    }
-    screen.render()
-})
+
+hideAll()
+
 //say = 0, party = 1, guild = 2, area = 3, trade = 4, greet = 9,
 //private = 11-18, p-notice = 21, emote = 26, global = 27, r-notice = 25,
 //raid = 32, megaphone = 213, guild-adv = 214
@@ -272,12 +290,16 @@ web.getLogin((err, data) => {
         host: srv.host,
         port: srv.port
     })
-
+    function killClient(){
+        client.close()
+        process.exit()
+    }
     let closed = false
 
     connection.dispatch.setProtocolVersion(config.ProtocolVersion)
 
     connection.dispatch.load('<>', function coreModule(dispatch) {
+
         client.on('connect', () => {
             dispatch.toServer('C_LOGIN_ARBITER', 2, {
                 unk1: 0,
@@ -288,10 +310,24 @@ web.getLogin((err, data) => {
                 ticket: new Buffer(data.ticket)
             })
         })
-        function killClient(){
-            client.close()
-            process.exit()
-        }
+
+        menu.on('select', (item)=>{
+            var name = item.content
+            hideAll()
+            if(name === "Chat"){
+                content.show()
+                chat.show()
+                chatpanel.show()
+            }
+            else if(name === "Friend/Guild List"){
+                friend_list.show()
+                guild_list.show()
+                //dispatch c_getfriends and c_getguildstuff
+                //possibly set timeout for it
+            }
+            screen.render()
+        })
+
         function closeClient() {
             if (closed) return
             closed = true
@@ -303,8 +339,7 @@ web.getLogin((err, data) => {
             }, 5000)
         }
         dispatch.hook('S_PREPARE_EXIT', 1, () => {
-            content.pushLine("Exiting")
-            setTimeout(killClient, 500)
+            setTimeout(killClient, 1000)
         })
         screen.key(['escape', 'C-c'], function(ch, key) {
             return closeClient()
