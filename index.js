@@ -250,7 +250,7 @@ web.getLogin((err, data) => {
                 if (screenshotmode) {
                     characters.set(character.name.toLowerCase(), {
                         id: character.id,
-                        description: `Redacted.Name [${describe(character)}]`
+                        description: `Redacted.Name [Redacted Character Description]`
                     })
                 } else {
                     characters.set(character.name.toLowerCase(), {
