@@ -8,7 +8,7 @@ const {
 } = require('tera-proxy-game')
 var npmstring = require('string')
 var blessed = require('blessed')
-var screenshotmode = true
+var screenshotmode = (config.ss_mode === "true" || config.ss_mode === "True")
 var screen = blessed.screen({
     smartCSR: true,
     autoPadding: true,
@@ -216,11 +216,11 @@ web.getLogin((err, data) => {
         if (closed) return
         closed = true
         content.pushLine("Shutting down TERA-CLI...")
-        client.close()
         setTimeout(() => {
             content.pushLine("Exiting")
+            client.close()
             process.exit()
-        }, 500)
+        }, 1000)
     }
     screen.key(['escape', 'C-c'], function(ch, key) {
         return closeClient()
