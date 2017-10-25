@@ -1,3 +1,3 @@
-# Tera CLI
+# Features
 
-Terminal Interface for the MMORPG TERA Online
+Yes, very good features. the best features. log in to tera and use only 60mb wow. also chat and things
