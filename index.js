@@ -150,6 +150,49 @@ var chatpanel = blessed.box({
 screen.append(chatpanel)
 screen.append(chat)
 
+//say = 0, party = 1, guild = 2, area = 3, trade = 4, greet = 9,
+//private = 11-18, p-notice = 21, emote = 26, global = 27, r-notice = 25,
+//raid = 32, megaphone = 213, guild-adv = 214
+const chatChannels = {
+    0: '{#FFFFFE-fg}[Say]',
+    1: '{#48ADFF-fg}[Party]',
+    2: '{#12DE3A-fg}[Guild]',
+    3: '{#896BE3-fg}[Area]',
+    4: '{#BD9633-fg}[Trade]',
+    9: '{#FFBD00-fg}[Greeting]',
+    26: '{#FFC0CB-fg}',
+    27: '{#FFFF01-fg}[Global]',
+    213: '{#FFFF01-fg}[Megaphone]',
+    214: '{#6DBA6C-fg}[Guild-Ad]'
+}
+
+function parseTeraChat(evt) {
+    msg = chatChannels[evt.channel]
+    msg += '[' + evt.authorName + ']: '
+    msg += npmstring(evt.message).stripTags().decodeHTMLEntities().s
+    return msg + "{/}"
+}
+var currentChatChannel = 2
+const chatCommands = {
+    '/g':2,
+    '/s':0,
+    '/a':3,
+    '/t':4,
+    '/o':27
+}
+chat.on('keypress', ()=>{
+    var c = chat.getValue()
+    if(c.startsWith('/') && c.length == 2 && chatCommands[c]!= null){
+        var ch = chatCommands[c]
+        currentChatChannel = ch
+        chatpanel.setContent(chatChannels[ch]+'{/}')
+        setImmediate(()=>{
+            chat.clearValue()
+            screen.render()
+        })
+    }
+})
+
 const describe = (() => {
     const races = ['Human', 'High Elf', 'Aman', 'Castanic', 'Popori', 'Baraka']
     const genders = ['Male', 'Female']
@@ -175,28 +218,6 @@ const describe = (() => {
         return description
     }
 })()
-//say = 0, party = 1, guild = 2, area = 3, trade = 4, greet = 9,
-//private = 11-18, p-notice = 21, emote = 26, global = 27, r-notice = 25,
-//raid = 32, megaphone = 213, guild-adv = 214
-chatChannels = {
-    0: '{#FFFFFE-fg}[Say]',
-    1: '{#48ADFF-fg}[Party]',
-    2: '{#12DE3A-fg}[Guild]',
-    3: '{#896BE3-fg}[Area]',
-    4: '{#BD9633-fg}[Trade]',
-    9: '{#FFBD00-fg}[Greeting]',
-    26: '{#FFC0CB-fg}',
-    27: '{#FFFF01-fg}[Global]',
-    213: '{#FFFF01-fg}[Megaphone]',
-    214: '{#6DBA6C-fg}[Guild-Ad]'
-}
-
-function parseTeraChat(evt) {
-    msg = chatChannels[evt.channel]
-    msg += '[' + evt.authorName + ']: '
-    msg += npmstring(evt.message).stripTags().decodeHTMLEntities().s
-    return msg + "{/}"
-}
 
 const srv = servers[config.server]
 const web = new webClient(srv.srv, config.email, config.pass)
@@ -212,20 +233,6 @@ web.getLogin((err, data) => {
 
     let closed = false
 
-    function closeClient() {
-        if (closed) return
-        closed = true
-        content.pushLine("Shutting down TERA-CLI...")
-        setTimeout(() => {
-            content.pushLine("Exiting")
-            client.close()
-            process.exit()
-        }, 1000)
-    }
-    screen.key(['escape', 'C-c'], function(ch, key) {
-        return closeClient()
-    })
-
     connection.dispatch.setProtocolVersion(config.ProtocolVersion)
 
     connection.dispatch.load('<>', function coreModule(dispatch) {
@@ -239,7 +246,27 @@ web.getLogin((err, data) => {
                 ticket: new Buffer(data.ticket)
             })
         })
-
+        function killClient(){
+            client.close()
+            process.exit()
+        }
+        function closeClient() {
+            if (closed) return
+            closed = true
+            content.pushLine("Shutting down TERA-CLI...")
+            dispatch.toServer('C_EXIT', 1)
+            setTimeout(() => {
+                content.pushLine("No Response from Server- Force Exiting")
+                setTimeout(killClient, 1000)
+            }, 5000)
+        }
+        dispatch.hook('S_PREPARE_EXIT', 1, () => {
+            content.pushLine("Exiting")
+            setTimeout(killClient, 500)
+        })
+        screen.key(['escape', 'C-c'], function(ch, key) {
+            return closeClient()
+        })
         dispatch.hook('S_LOGIN_ACCOUNT_INFO', 1, () => {
             dispatch.toServer('C_GET_USER_LIST', 1)
         })
@@ -295,7 +322,7 @@ web.getLogin((err, data) => {
         chat.on('submit', ()=>{
             var msg = chat.getValue()
             dispatch.toServer('C_CHAT', 1, {
-                channel: 2,
+                channel: currentChatChannel,
                 message: msg
             })
             chat.clearValue()
