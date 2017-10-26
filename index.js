@@ -243,7 +243,7 @@ const chatCommands = {
 }
 chat.on('keypress', ()=>{
     var c = chat.getValue()
-    if(c.startsWith('/') && c.length == 2 && chatCommands[c]!= null){
+    if(c.length == 2 && chatCommands[c]!= null){
         var ch = chatCommands[c]
         currentChatChannel = ch
         chatpanel.setContent(chatChannels[ch]+'{/}')
