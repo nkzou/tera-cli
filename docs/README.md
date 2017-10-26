@@ -1,3 +1,8 @@
 # Features
-
-Yes, very good features. the best features. log in to tera and use only 60mb wow. also chat and things
+* Extremely lightweight client for TERA
+* Simple text interface
+* View Friend list and Guild Member lists
+* Read and send chat messages
+* Search the Trade Broker
+* Compatible with most `tera-proxy` modules (ie AutoNegotiate)
+* Inspect players
