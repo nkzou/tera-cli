@@ -228,7 +228,8 @@ const chatChannels = {
 
 function parseTeraChat(evt) {
     msg = chatChannels[evt.channel]
-    msg += '[' + evt.authorName + ']: '
+    if(screenshotmode) msg += '[Redacted.Name]: '
+    else msg += '['+evt.authorName+']: '
     msg += npmstring(evt.message).stripTags().decodeHTMLEntities().s
     return msg + "{/}"
 }
