@@ -194,18 +194,17 @@ var guild_list = blessed.list({
         }
     }
 })
-screen.append(content)
-screen.append(chatpanel)
-screen.append(chat)
-screen.append(friend_list)
-screen.append(guild_list)
+
+var elements = [content, chatpanel, chat, friend_list, guild_list]
+
+for(e in elements){
+    screen.append(e)
+}
 
 function hideAll(){
-    content.hide()
-    chat.hide()
-    chatpanel.hide()
-    friend_list.hide()
-    guild_list.hide()
+    for(e in elements){
+        e.hide()
+    }
 }
 
 hideAll()
@@ -243,7 +242,7 @@ const chatCommands = {
 }
 chat.on('keypress', ()=>{
     var c = chat.getValue()
-    if(c.startsWith('/') && c.length == 2 && chatCommands[c]!= null){
+    if(c.length == 2 && chatCommands[c]!= null){
         var ch = chatCommands[c]
         currentChatChannel = ch
         chatpanel.setContent(chatChannels[ch]+'{/}')
