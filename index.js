@@ -445,7 +445,7 @@ web.getLogin((err, data) => {
         if(c.lastOnline > 0){
           friend_list.add(`* ${c.name} {|} [${describe(c)}]`)
         }else{
-          friend_list.add("{#46FF41-fg}*{/}"+`${c.name} {|} [${describe(c)}]`)
+          friend_list.add("{#46FF41-fg}*{/} "+`${c.name} {|} [${describe(c)}]`)
         }
       }
     })
