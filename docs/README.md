@@ -8,4 +8,4 @@
 * Inspect players
 
 # Screenshots (Still IN DEV)
-[![Chat Screenshot](https://i.imgur.com/MrwtPFI.png)](https://i.imgur.com/MrwtPFI.png)
+<a target="_blank" href="https://i.imgur.com/MrwtPFI.png"><img src="https://i.imgur.com/MrwtPFI.png"></a>
