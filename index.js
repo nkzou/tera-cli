@@ -20,6 +20,32 @@ setInterval(() => {
     //screen.realloc()
     screen.render()
 }, 5000)
+
+// Console
+var console = blessed.box({
+  top: '2%',
+  left: '2%',
+  width: '50%',
+  height: '20%',
+  border: {
+    type: 'line'
+  }
+})
+
+console.hide()
+screen.append(console)
+
+console.log = (string) => {
+  console.insertLine(0, string)
+  screen.render()
+}
+
+screen.key(['C-q'], (ch, key) => {
+  console.toggle()
+  console.focus()
+  screen.render()
+});
+
 //Menu
 var menu = blessed.list({
     top: '0',
