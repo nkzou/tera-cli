@@ -6,5 +6,6 @@
 * Search the Trade Broker
 * Compatible with most `tera-proxy` modules (ie AutoNegotiate)
 * Inspect players
+
 # Screenshots (Still IN DEV)
 ![Chat Screenshot](https://i.imgur.com/MrwtPFI.png "Chat Screenshot")
