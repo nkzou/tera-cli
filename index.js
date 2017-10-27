@@ -177,7 +177,8 @@ var friend_list = blessed.list({
   left: '20%',
   width: '40%',
   height: '100%',
-  items: ["friendwan", "frentwo"],
+  label: 'Friend List',
+  items: [],
   tags: true,
   mouse: true,
   interactive: true,
@@ -201,7 +202,8 @@ var guild_list = blessed.list({
   left: '60%',
   width: '40%',
   height: '100%',
-  items: ["guildiewan", "guildietwo"],
+  label: 'Guild List',
+  items: [],
   tags: true,
   mouse: true,
   interactive: true,
@@ -279,7 +281,7 @@ chat.on('keypress', () => {
     })
   }
 })
-
+var currentGuild = null
 const describe = (() => {
   const races = ['Human', 'High Elf', 'Aman', 'Castanic', 'Popori', 'Baraka']
   const genders = ['Male', 'Female']
@@ -348,9 +350,11 @@ web.getLogin((err, data) => {
         chatpanel.show()
       } else if (name === "Friend/Guild List") {
         friend_list.show()
-        guild_list.show()
-        //dispatch c_getfriends and c_getguildstuff
-        //possibly set timeout for it
+        guild_list.show()/*
+        dispatch.toServer('C_REQUEST_GUILD_INFO', 1, {
+          guildId: currentGuild,
+          type:5
+        })*/
       }
       screen.render()
     })
@@ -434,6 +438,28 @@ web.getLogin((err, data) => {
     })
     client.on('close', () => {
       closeClient()
+    })
+    dispatch.hook('S_FRIEND_LIST', 1, (event) => {
+      friend_list.clearItems()
+      for(const c of event.friends){
+        if(c.lastOnline > 0){
+          friend_list.add(`* ${c.name} {|} [${describe(c)}]`)
+        }else{
+          friend_list.add("{#46FF41-fg}*{/}"+`${c.name} {|} [${describe(c)}]`)
+        }
+      }
+    })
+    dispatch.hook('S_GUILD_INFO', 1, (event) => {
+      currentGuild = event.id
+    })
+    dispatch.hook('S_GUILD_MEMBER_LIST', 1, (event) => {
+      for(const c of event.members){
+        if(c.status == 2){
+          guild_list.add(`* ${c.name} {|} [${describe(c)}]`)
+        }else{
+          guild_list.add("{#46FF41-fg}*{/} "+`${c.name} {|} [${describe(c)}]`)
+        }
+      }
     })
   })
   /*
