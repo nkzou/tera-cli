@@ -8,7 +8,6 @@ const {
 } = require('tera-proxy-game')
 var npmstring = require('string')
 var blessed = require('blessed')
-var screenshotmode = (config.ss_mode === "true" || config.ss_mode === "True")
 var screen = blessed.screen({
   smartCSR: true,
   autoPadding: true,
@@ -181,15 +180,11 @@ var friend_list = blessed.list({
   items: [],
   tags: true,
   mouse: true,
-  interactive: true,
   keys: true,
   border: {
     type: 'line'
   },
   style: {
-    selected: {
-      bold: true
-    },
     fg: 'white',
     bg: 'black',
     border: {
@@ -206,15 +201,11 @@ var guild_list = blessed.list({
   items: [],
   tags: true,
   mouse: true,
-  interactive: true,
   keys: true,
   border: {
     type: 'line'
   },
   style: {
-    selected: {
-      bold: true
-    },
     fg: 'white',
     bg: 'black',
     border: {
@@ -257,8 +248,7 @@ const chatChannels = {
 
 function parseTeraChat(evt) {
   msg = chatChannels[evt.channel]
-  if (screenshotmode) msg += '[Redacted.Name]: '
-  else msg += '[' + evt.authorName + ']: '
+  msg += '[' + evt.authorName + ']: '
   msg += npmstring(evt.message).stripTags().decodeHTMLEntities().s
   return msg + "{/}"
 }
@@ -289,7 +279,7 @@ const describe = (() => {
   const classes = ['Warrior', 'Lancer', 'Slayer', 'Berserker', 'Sorcerer', 'Archer', 'Priest', 'Mystic', 'Reaper', 'Gunner', 'Brawler', 'Ninja', 'Valkyrie']
 
   return function describe(character) {
-    let description = 'Level '
+    let description = 'lvl '
     description += (character.level + " ")
     const race = races[character.race] || '?'
     const gender = genders[character.gender] || '?'
@@ -385,29 +375,20 @@ web.getLogin((err, data) => {
     dispatch.hook('S_GET_USER_LIST', 5, (event) => {
       const characters = new Map()
       for (const character of event.characters) {
-        if (screenshotmode) {
-          characters.set(character.name.toLowerCase(), {
-            id: character.id,
-            description: `Redacted.Name [Redacted Character Description]`
-          })
-        } else {
-          characters.set(character.name.toLowerCase(), {
-            id: character.id,
-            description: `${character.name} [${describe(character)}]`
-          })
-        }
+        characters.set(character.name.toLowerCase(), {
+          id: character.id,
+          description: `${character.name} [${describe(character)}]`
+        })
       }
       content.pushLine("Characters:")
       for (const char of characters.values()) {
-        if (screenshotmode) content.pushLine(`> ${char.description} (id: redacted_id)`)
-        else content.pushLine(`> ${char.description} (id: ${char.id})`)
+        content.pushLine(`> ${char.description} (id: ${char.id})`)
       }
       const character = characters.get(config.character.toLowerCase())
       if (!character) {
         content.pushLine(`[client] no character "${config.character}"`)
       } else {
-        if (screenshotmode) content.pushLine(`[client] logging onto ${character.description} (id: redacted_id)`)
-        else content.pushLine(`[client] logging onto ${character.description} (id: ${character.id})`)
+        content.pushLine(`[client] logging onto ${character.description} (id: ${character.id})`)
         dispatch.toServer('C_SELECT_USER', 1, {
           id: character.id,
           unk: 0
@@ -446,9 +427,9 @@ web.getLogin((err, data) => {
       friend_list.clearItems()
       for(const c of event.friends){
         if(c.lastOnline > 0){
-          friend_list.add(`* ${c.lastOnline} ${c.name} {|} [${describe(c)}]`)
+          friend_list.add(`* ${c.location3} ${c.name} {|} [${describe(c)}]`)
         }else{
-          friend_list.add("{#46FF41-fg}*{/} "+`${c.lastOnline} ${c.name} {|} [${describe(c)}]`)
+          friend_list.add("{#46FF41-fg}* "+`${c.location3} ${c.name} {|} [${describe(c)}]`+"{/}")
         }
       }
     })
@@ -460,7 +441,7 @@ web.getLogin((err, data) => {
         if(c.status == 2){
           guild_list.add(`* ${c.name} {|} [${describe(c)}]`)
         }else{
-          guild_list.add("{#46FF41-fg}*{/} "+`${c.name} {|} [${describe(c)}]`)
+          guild_list.add("{#46FF41-fg}* "+`${c.name} {|} [${describe(c)}]`+"{/}")
         }
       }
     })
@@ -473,8 +454,7 @@ web.getLogin((err, data) => {
   srvConn.setTimeout(10 * 1000)
 
   srvConn.on('connect', () => {
-    if (screenshotmode) content.pushLine(`Connected to <redacted_ip:redacted_port> aka Celestial Mount Tempest Valley Forest`)
-    else content.pushLine(`Connected to <${srvConn.remoteAddress}:${srvConn.remotePort}> aka ${config.server}`)
+    content.pushLine(`Connected to <${srvConn.remoteAddress}:${srvConn.remotePort}> aka ${config.server}`)
   })
 
   srvConn.on('timeout', () => {
