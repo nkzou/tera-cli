@@ -176,7 +176,7 @@ var friend_list = blessed.list({
   top: '0%',
   left: '20%',
   width: '40%',
-  height: '100%',
+  height: '90%',
   label: 'Friend List',
   items: [],
   tags: true,
@@ -201,7 +201,7 @@ var guild_list = blessed.list({
   top: '0%',
   left: '60%',
   width: '40%',
-  height: '100%',
+  height: '90%',
   label: 'Guild List',
   items: [],
   tags: true,
@@ -228,10 +228,11 @@ screen.append(chat)
 screen.append(friend_list)
 screen.append(guild_list)
 
+var currentWindow = "Home"
 function hideAll() {
   content.hide()
-  chat.hide()
-  chatpanel.hide()
+  //chat.hide()
+  //chatpanel.hide()
   friend_list.hide()
   guild_list.hide()
 }
@@ -343,11 +344,12 @@ web.getLogin((err, data) => {
 
     menu.on('select', (item) => {
       var name = item.content
+      if(name == currentWindow) return
       hideAll()
       if (name === "Chat") {
         content.show()
-        chat.show()
-        chatpanel.show()
+        //chat.show()
+        //chatpanel.show()
       } else if (name === "Friend/Guild List") {
         friend_list.show()
         guild_list.show()/*
@@ -356,6 +358,7 @@ web.getLogin((err, data) => {
           type:5
         })*/
       }
+      currentWindow = name
       screen.render()
     })
 
@@ -443,9 +446,9 @@ web.getLogin((err, data) => {
       friend_list.clearItems()
       for(const c of event.friends){
         if(c.lastOnline > 0){
-          friend_list.add(`* ${c.name} {|} [${describe(c)}]`)
+          friend_list.add(`* ${c.lastOnline} ${c.name} {|} [${describe(c)}]`)
         }else{
-          friend_list.add("{#46FF41-fg}*{/} "+`${c.name} {|} [${describe(c)}]`)
+          friend_list.add("{#46FF41-fg}*{/} "+`${c.lastOnline} ${c.name} {|} [${describe(c)}]`)
         }
       }
     })
