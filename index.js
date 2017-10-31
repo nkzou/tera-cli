@@ -236,7 +236,7 @@ hideAll()
 const chatChannels = {
   0: '{#FFFFFE-fg}[Say]',
   1: '{#48ADFF-fg}[Party]',
-  2: '{#12DE3A-fg}[Guild]',
+  2: '{#46FF41-fg}[Guild]',
   3: '{#896BE3-fg}[Area]',
   4: '{#BD9633-fg}[Trade]',
   9: '{#FFBD00-fg}[Greeting]',
@@ -275,8 +275,8 @@ chat.on('keypress', () => {
 var currentGuild = null
 const describe = (() => {
   const races = ['Human', 'High Elf', 'Aman', 'Castanic', 'Popori', 'Baraka']
-  const genders = ['Male', 'Female']
-  const classes = ['Warrior', 'Lancer', 'Slayer', 'Berserker', 'Sorcerer', 'Archer', 'Priest', 'Mystic', 'Reaper', 'Gunner', 'Brawler', 'Ninja', 'Valkyrie']
+  const genders = ['M.', 'F.']
+  const classes = ['Warrior', 'Lancer', 'Slayer', 'Zerker', 'Sorc', 'Archer', 'Priest', 'Mystic', 'Reaper', 'Gunner', 'Brawler', 'Ninja', 'Valk']
 
   return function describe(character) {
     let description = 'lvl '
@@ -423,13 +423,13 @@ web.getLogin((err, data) => {
     client.on('close', () => {
       closeClient()
     })
-    dispatch.hook('S_FRIEND_LIST', 1, (event) => {
+    dispatch.hook('S_UPDATE_FRIEND_INFO', 1, (event) => {
       friend_list.clearItems()
       for(const c of event.friends){
-        if(c.lastOnline > 0){
-          friend_list.add(`* ${c.location3} ${c.name} {|} [${describe(c)}]`)
+        if(c.status == 2){
+          friend_list.add(`* ${c.name} {|} [${describe(c)}]`)
         }else{
-          friend_list.add("{#46FF41-fg}* "+`${c.location3} ${c.name} {|} [${describe(c)}]`+"{/}")
+          friend_list.add("{#46FF41-fg}* "+`${c.name} {|} [${describe(c)}]`+"{/}")
         }
       }
     })
