@@ -9,4 +9,7 @@
 * Inspect players
 
 # Screenshots (Still in Development)
+## Chat
 <a target="_blank" href="https://i.imgur.com/MrwtPFI.png"><img src="https://i.imgur.com/MrwtPFI.png"></a>
+## Friend/Guild List
+<a target="_blank" href="https://i.imgur.com/kQsiEPo.png"><img src="https://i.imgur.com/kQsiEPo.png"></a>
