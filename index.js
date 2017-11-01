@@ -15,17 +15,14 @@ var screen = blessed.screen({
 })
 
 screen.title = 'TERA Terminal Client'
-setInterval(() => {
-  //screen.realloc()
-  screen.render()
-}, 5000)
 
 // Console
 var console = blessed.box({
   top: '2%',
   left: 'center',
-  width: '50%',
-  height: '20%',
+  width: '80%',
+  height: '80%',
+  draggable: true,
   border: {
     type: 'line'
   }
@@ -181,6 +178,7 @@ var friend_list = blessed.list({
   tags: true,
   mouse: true,
   keys: true,
+  scrollable:true,
   border: {
     type: 'line'
   },
@@ -202,6 +200,7 @@ var guild_list = blessed.list({
   tags: true,
   mouse: true,
   keys: true,
+  scrollable:true,
   border: {
     type: 'line'
   },
@@ -213,6 +212,17 @@ var guild_list = blessed.list({
     }
   }
 })
+
+var friendmap={}
+var guildmap={}
+setInterval(()=>{
+  friend_list.clearItems()
+  for(var f in friendmap){
+    if(friendmap[f].status == 2) friend_list.add(`* ${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
+    else friend_list.add("{#46FF41-fg}* "+`${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
+  }
+  screen.render()
+},5000)
 screen.append(content)
 screen.append(chatpanel)
 screen.append(chat)
@@ -276,10 +286,10 @@ var currentGuild = null
 const describe = (() => {
   const races = ['Human', 'High Elf', 'Aman', 'Castanic', 'Popori', 'Baraka']
   const genders = ['M.', 'F.']
-  const classes = ['Warrior', 'Lancer', 'Slayer', 'Zerker', 'Sorc', 'Archer', 'Priest', 'Mystic', 'Reaper', 'Gunner', 'Brawler', 'Ninja', 'Valk']
+  const classes = ['Warrior', 'Lancer', 'Slayer', 'Berserker', 'Sorceror', 'Archer', 'Priest', 'Mystic', 'Reaper', 'Gunner', 'Brawler', 'Ninja', 'Valkyrie']
 
   return function describe(character) {
-    let description = 'lvl '
+    let description = ''
     description += (character.level + " ")
     const race = races[character.race] || '?'
     const gender = genders[character.gender] || '?'
@@ -320,7 +330,7 @@ web.getLogin((err, data) => {
   connection.dispatch.setProtocolVersion(config.ProtocolVersion)
 
   connection.dispatch.load('<>', function coreModule(dispatch) {
-
+    screen.realloc()
     client.on('connect', () => {
       dispatch.toServer('C_LOGIN_ARBITER', 2, {
         unk1: 0,
@@ -424,12 +434,12 @@ web.getLogin((err, data) => {
       closeClient()
     })
     dispatch.hook('S_UPDATE_FRIEND_INFO', 1, (event) => {
-      friend_list.clearItems()
+      console.log("<"+Object.keys(event.friends).length)
       for(const c of event.friends){
-        if(c.status == 2){
-          friend_list.add(`* ${c.name} {|} [${describe(c)}]`)
-        }else{
-          friend_list.add("{#46FF41-fg}* "+`${c.name} {|} [${describe(c)}]`+"{/}")
+        friendmap[c.id] = {
+          "name":c.name,
+          "desc":`${describe(c)}`,
+          "status": c.status
         }
       }
     })
