@@ -305,7 +305,7 @@ var currentGuild = null
 const describe = (() => {
   const races = ['Human', 'High Elf', 'Aman', 'Castanic', 'Popori', 'Baraka']
   const genders = ['M.', 'F.']
-  const classes = ['Warrior', 'Lancer', 'Slayer', 'Berserker', 'Sorceror', 'Archer', 'Priest', 'Mystic', 'Reaper', 'Gunner', 'Brawler', 'Ninja', 'Valkyrie']
+  const classes = ['Warrior', 'Lancer', 'Slayer', 'Berserker', 'Sorcerer', 'Archer', 'Priest', 'Mystic', 'Reaper', 'Gunner', 'Brawler', 'Ninja', 'Valkyrie']
 
   return function describe(character) {
     let description = ''
