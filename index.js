@@ -456,11 +456,9 @@ web.getLogin((err, data) => {
       }
     })
   })
-  /*
   fs.readdirSync('./modules/').forEach(file => {
       connection.dispatch.load('./modules/' + file, module)
-  })*/
-  //connection.dispatch.load('./modules/teraCLI', module, closeClient)
+  })
   srvConn.setTimeout(10 * 1000)
 
   srvConn.on('connect', () => {
