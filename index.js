@@ -179,10 +179,14 @@ var friend_list = blessed.list({
   mouse: true,
   keys: true,
   scrollable:true,
+  interactive: true,
   border: {
     type: 'line'
   },
   style: {
+    selected:{
+      fg: '#FFC0CC'
+    },
     fg: 'white',
     bg: 'black',
     border: {
@@ -200,11 +204,15 @@ var guild_list = blessed.list({
   tags: true,
   mouse: true,
   keys: true,
+  interactive: true,
   scrollable:true,
   border: {
     type: 'line'
   },
   style: {
+    selected:{
+      fg: '#FFC0CC'
+    },
     fg: 'white',
     bg: 'black',
     border: {
@@ -215,7 +223,7 @@ var guild_list = blessed.list({
 
 var friendmap={}
 var guildmap={}
-setInterval(()=>{
+function updateLists(){
   friend_list.clearItems()
   for(var f in friendmap){
     if(friendmap[f].status == 2) friend_list.add(`* ${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
@@ -226,7 +234,8 @@ setInterval(()=>{
     if(guildmap[m].status == 2) guild_list.add(`* ${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
     else guild_list.add("{#46FF41-fg}* "+`${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
   }
-},5000)
+  screen.render()
+}
 screen.append(content)
 screen.append(chatpanel)
 screen.append(chat)
@@ -369,6 +378,7 @@ web.getLogin((err, data) => {
         //chat.show()
         //chatpanel.show()
       } else if (name === "Friend/Guild List") {
+        updateLists()
         friend_list.show()
         guild_list.show()/*
         dispatch.toServer('C_REQUEST_GUILD_INFO', 1, {
