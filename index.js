@@ -226,7 +226,6 @@ setInterval(()=>{
     if(guildmap[m].status == 2) guild_list.add(`* ${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
     else guild_list.add("{#46FF41-fg}* "+`${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
   }
-  screen.render()
 },5000)
 screen.append(content)
 screen.append(chatpanel)
