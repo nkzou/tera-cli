@@ -148,7 +148,7 @@ var chat = blessed.textbox({
   }
 })
 var chatpanel = blessed.box({
-  content: "{#12DE3A-fg}[Guild]{/}",
+  content: "{#46FF41-fg}[Guild]{/}",
   top: '90%',
   left: '20%',
   width: '15%',
@@ -220,6 +220,11 @@ setInterval(()=>{
   for(var f in friendmap){
     if(friendmap[f].status == 2) friend_list.add(`* ${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
     else friend_list.add("{#46FF41-fg}* "+`${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
+  }
+  guild_list.clearItems()
+  for(var m in guildmap){
+    if(guildmap[m].status == 2) guild_list.add(`* ${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
+    else guild_list.add("{#46FF41-fg}* "+`${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
   }
   screen.render()
 },5000)
@@ -435,7 +440,7 @@ web.getLogin((err, data) => {
     })
     dispatch.hook('S_UPDATE_FRIEND_INFO', 1, (event) => {
       console.log("<"+Object.keys(event.friends).length)
-      for(const c of event.friends){
+      for(var c of event.friends){
         friendmap[c.id] = {
           "name":c.name,
           "desc":`${describe(c)}`,
@@ -447,11 +452,12 @@ web.getLogin((err, data) => {
       currentGuild = event.id
     })
     dispatch.hook('S_GUILD_MEMBER_LIST', 1, (event) => {
-      for(const c of event.members){
-        if(c.status == 2){
-          guild_list.add(`* ${c.name} {|} [${describe(c)}]`)
-        }else{
-          guild_list.add("{#46FF41-fg}* "+`${c.name} {|} [${describe(c)}]`+"{/}")
+      console.log("<"+Object.keys(event.members).length)
+      for(var c of event.members){
+        guildmap[c.playerID] = {
+          "name":c.name,
+          "desc":`${describe(c)}`,
+          "status": c.status
         }
       }
     })
