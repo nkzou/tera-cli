@@ -268,6 +268,7 @@ function parseTeraChat(evt) {
   return msg + "{/}"
 }
 var currentChatChannel = 2
+var whisperTarget = ''
 const chatCommands = {
   '/g': 2,
   '/s': 0,
@@ -285,6 +286,19 @@ chat.on('keypress', () => {
       chat.clearValue()
       screen.render()
     })
+  }
+  if (c.startsWith('/w')){
+    currentChatChannel = -1
+    var count = (c.match(/ /g) || []).length
+    if(count >= 2){
+      var res = c.split(' ')
+      whisperTarget = res[1]
+      chatpanel.setContent('{#FF5694-fg}[-> '+whisperTarget+']{/}')
+      setImmediate(() => {
+        chat.clearValue()
+        screen.render()
+      })
+    }
   }
 })
 var currentGuild = null
@@ -428,10 +442,18 @@ web.getLogin((err, data) => {
     })
     chat.on('submit', () => {
       var msg = chat.getValue()
-      dispatch.toServer('C_CHAT', 1, {
-        channel: currentChatChannel,
-        message: msg
-      })
+      if(msg.startsWith('/')) return
+      if(currentChatChannel >= 0){
+        dispatch.toServer('C_CHAT', 1, {
+          channel: currentChatChannel,
+          message: msg
+        })
+      } else if (currentChatChannel == -1){
+        dispatch.toServer('C_WHISPER', 1, {
+          target: whisperTarget,
+          message: msg
+        })
+      }
       chat.clearValue()
       chat.focus()
     })
@@ -459,6 +481,14 @@ web.getLogin((err, data) => {
           "desc":`${describe(c)}`,
           "status": c.status
         }
+      }
+    })
+    dispatch.hook("S_WHISPER", 1, (evt)=>{
+      var msg = npmstring(evt.message).stripTags().decodeHTMLEntities().s
+      if(config.character === evt.author){
+        content.pushLine("{#FF5694-fg}[-> "+evt.recipient+"]: "+msg+"{/}")
+      } else{
+        content.pushLine("{#FF5694-fg}[<- "+evt.author+"]: "+msg+"{/}")
       }
     })
   })
