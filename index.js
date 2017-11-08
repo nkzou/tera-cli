@@ -380,11 +380,14 @@ web.getLogin((err, data) => {
       } else if (name === "Friend/Guild List") {
         updateLists()
         friend_list.show()
-        guild_list.show()/*
-        dispatch.toServer('C_REQUEST_GUILD_INFO', 1, {
-          guildId: currentGuild,
-          type:5
-        })*/
+        guild_list.show()
+        if(currentGuild != null){
+          dispatch.toServer('C_REQUEST_GUILD_INFO', 1, {
+            guildId: currentGuild,
+            type:5
+          })
+        }
+        dispatch.toServer('C_UPDATE_FRIEND_INFO', 1, {})
       }
       currentWindow = name
       screen.render()
