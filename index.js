@@ -1,5 +1,6 @@
 const fs = require('fs')
 const config = require('./config/config.json')
+const itemdc = require('./datacenter/fullitems-'+config.region)
 const servers = require('./config/servers.json')
 const webClient = require('tera-auth-ticket')
 const {
