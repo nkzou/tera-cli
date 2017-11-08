@@ -15,17 +15,14 @@ var screen = blessed.screen({
 })
 
 screen.title = 'TERA Terminal Client'
-setInterval(() => {
-  //screen.realloc()
-  screen.render()
-}, 5000)
 
 // Console
 var console = blessed.box({
   top: '2%',
   left: 'center',
-  width: '50%',
-  height: '20%',
+  width: '80%',
+  height: '80%',
+  draggable: true,
   border: {
     type: 'line'
   }
@@ -151,7 +148,7 @@ var chat = blessed.textbox({
   }
 })
 var chatpanel = blessed.box({
-  content: "{#12DE3A-fg}[Guild]{/}",
+  content: "{#46FF41-fg}[Guild]{/}",
   top: '90%',
   left: '20%',
   width: '15%',
@@ -181,10 +178,15 @@ var friend_list = blessed.list({
   tags: true,
   mouse: true,
   keys: true,
+  scrollable:true,
+  interactive: true,
   border: {
     type: 'line'
   },
   style: {
+    selected:{
+      fg: '#FFC0CC'
+    },
     fg: 'white',
     bg: 'black',
     border: {
@@ -202,10 +204,15 @@ var guild_list = blessed.list({
   tags: true,
   mouse: true,
   keys: true,
+  interactive: true,
+  scrollable:true,
   border: {
     type: 'line'
   },
   style: {
+    selected:{
+      fg: '#FFC0CC'
+    },
     fg: 'white',
     bg: 'black',
     border: {
@@ -213,6 +220,29 @@ var guild_list = blessed.list({
     }
   }
 })
+
+var friendmap={}
+var guildmap={}
+var currentGuild = null
+
+function updateLists(){
+  friend_list.clearItems()
+  for(var f in friendmap){
+    if(friendmap[f].status == 2) friend_list.add(`* ${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
+    else friend_list.add("{#46FF41-fg}* "+`${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
+  }
+  guild_list.clearItems()
+  if(currentGuild == null){
+    guild_list.add("You are not in a Guild.")
+    screen.render()
+    return
+  }
+  for(var m in guildmap){
+    if(guildmap[m].status == 2) guild_list.add(`* ${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
+    else guild_list.add("{#46FF41-fg}* "+`${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
+  }
+  screen.render()
+}
 screen.append(content)
 screen.append(chatpanel)
 screen.append(chat)
@@ -236,7 +266,7 @@ hideAll()
 const chatChannels = {
   0: '{#FFFFFE-fg}[Say]',
   1: '{#48ADFF-fg}[Party]',
-  2: '{#12DE3A-fg}[Guild]',
+  2: '{#46FF41-fg}[Guild]',
   3: '{#896BE3-fg}[Area]',
   4: '{#BD9633-fg}[Trade]',
   9: '{#FFBD00-fg}[Greeting]',
@@ -253,6 +283,7 @@ function parseTeraChat(evt) {
   return msg + "{/}"
 }
 var currentChatChannel = 2
+var whisperTarget = ''
 const chatCommands = {
   '/g': 2,
   '/s': 0,
@@ -271,15 +302,27 @@ chat.on('keypress', () => {
       screen.render()
     })
   }
+  if (c.startsWith('/w')){
+    currentChatChannel = -1
+    var count = (c.match(/ /g) || []).length
+    if(count >= 2){
+      var res = c.split(' ')
+      whisperTarget = res[1]
+      chatpanel.setContent('{#FF5694-fg}[-> '+whisperTarget+']{/}')
+      setImmediate(() => {
+        chat.clearValue()
+        screen.render()
+      })
+    }
+  }
 })
-var currentGuild = null
 const describe = (() => {
   const races = ['Human', 'High Elf', 'Aman', 'Castanic', 'Popori', 'Baraka']
-  const genders = ['Male', 'Female']
+  const genders = ['M.', 'F.']
   const classes = ['Warrior', 'Lancer', 'Slayer', 'Berserker', 'Sorcerer', 'Archer', 'Priest', 'Mystic', 'Reaper', 'Gunner', 'Brawler', 'Ninja', 'Valkyrie']
 
   return function describe(character) {
-    let description = 'lvl '
+    let description = ''
     description += (character.level + " ")
     const race = races[character.race] || '?'
     const gender = genders[character.gender] || '?'
@@ -320,7 +363,7 @@ web.getLogin((err, data) => {
   connection.dispatch.setProtocolVersion(config.ProtocolVersion)
 
   connection.dispatch.load('<>', function coreModule(dispatch) {
-
+    screen.realloc()
     client.on('connect', () => {
       dispatch.toServer('C_LOGIN_ARBITER', 2, {
         unk1: 0,
@@ -341,12 +384,16 @@ web.getLogin((err, data) => {
         //chat.show()
         //chatpanel.show()
       } else if (name === "Friend/Guild List") {
+        updateLists()
         friend_list.show()
-        guild_list.show()/*
-        dispatch.toServer('C_REQUEST_GUILD_INFO', 1, {
-          guildId: currentGuild,
-          type:5
-        })*/
+        guild_list.show()
+        if(currentGuild != null){
+          dispatch.toServer('C_REQUEST_GUILD_INFO', 1, {
+            guildId: currentGuild,
+            type:5
+          })
+        }
+        dispatch.toServer('C_UPDATE_FRIEND_INFO', 1)
       }
       currentWindow = name
       screen.render()
@@ -413,23 +460,41 @@ web.getLogin((err, data) => {
     })
     chat.on('submit', () => {
       var msg = chat.getValue()
-      dispatch.toServer('C_CHAT', 1, {
-        channel: currentChatChannel,
-        message: msg
-      })
+      if(msg.startsWith('/')) return
+      if(currentChatChannel >= 0){
+        dispatch.toServer('C_CHAT', 1, {
+          channel: currentChatChannel,
+          message: msg
+        })
+      } else if (currentChatChannel == -1){
+        dispatch.toServer('C_WHISPER', 1, {
+          target: whisperTarget,
+          message: msg
+        })
+      }
       chat.clearValue()
       chat.focus()
     })
     client.on('close', () => {
       closeClient()
     })
+    dispatch.hook('S_UPDATE_FRIEND_INFO', 1, (event) => {
+      console.log("FU<"+Object.keys(event.friends).length)
+      for(var c of event.friends){
+        friendmap[c.id] = {
+          "name":c.name,
+          "desc":`${describe(c)}`,
+          "status": c.status
+        }
+      }
+    })
     dispatch.hook('S_FRIEND_LIST', 1, (event) => {
-      friend_list.clearItems()
-      for(const c of event.friends){
-        if(c.lastOnline > 0){
-          friend_list.add(`* ${c.location3} ${c.name} {|} [${describe(c)}]`)
-        }else{
-          friend_list.add("{#46FF41-fg}* "+`${c.location3} ${c.name} {|} [${describe(c)}]`+"{/}")
+      console.log("FL<"+Object.keys(event.friends).length)
+      for(var c of event.friends){
+        friendmap[c.id] = {
+          "name":c.name,
+          "desc":`${describe(c)}`,
+          "status": 2
         }
       }
     })
@@ -437,20 +502,27 @@ web.getLogin((err, data) => {
       currentGuild = event.id
     })
     dispatch.hook('S_GUILD_MEMBER_LIST', 1, (event) => {
-      for(const c of event.members){
-        if(c.status == 2){
-          guild_list.add(`* ${c.name} {|} [${describe(c)}]`)
-        }else{
-          guild_list.add("{#46FF41-fg}* "+`${c.name} {|} [${describe(c)}]`+"{/}")
+      console.log("G<"+Object.keys(event.members).length)
+      for(var c of event.members){
+        guildmap[c.playerID] = {
+          "name":c.name,
+          "desc":`${describe(c)}`,
+          "status": c.status
         }
       }
     })
+    dispatch.hook("S_WHISPER", 1, (evt)=>{
+      var msg = npmstring(evt.message).stripTags().decodeHTMLEntities().s
+      if(config.character === evt.author){
+        content.pushLine("{#FF5694-fg}[-> "+evt.recipient+"]: "+msg+"{/}")
+      } else{
+        content.pushLine("{#FF5694-fg}[<- "+evt.author+"]: "+msg+"{/}")
+      }
+    })
   })
-  /*
   fs.readdirSync('./modules/').forEach(file => {
       connection.dispatch.load('./modules/' + file, module)
-  })*/
-  //connection.dispatch.load('./modules/teraCLI', module, closeClient)
+  })
   srvConn.setTimeout(10 * 1000)
 
   srvConn.on('connect', () => {
