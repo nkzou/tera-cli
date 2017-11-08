@@ -223,6 +223,8 @@ var guild_list = blessed.list({
 
 var friendmap={}
 var guildmap={}
+var currentGuild = null
+
 function updateLists(){
   friend_list.clearItems()
   for(var f in friendmap){
@@ -230,6 +232,11 @@ function updateLists(){
     else friend_list.add("{#46FF41-fg}* "+`${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
   }
   guild_list.clearItems()
+  if(currentGuild == null){
+    guild_list.add("You are not in a Guild.")
+    screen.render()
+    return
+  }
   for(var m in guildmap){
     if(guildmap[m].status == 2) guild_list.add(`* ${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
     else guild_list.add("{#46FF41-fg}* "+`${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
@@ -309,7 +316,6 @@ chat.on('keypress', () => {
     }
   }
 })
-var currentGuild = null
 const describe = (() => {
   const races = ['Human', 'High Elf', 'Aman', 'Castanic', 'Popori', 'Baraka']
   const genders = ['M.', 'F.']
@@ -387,7 +393,7 @@ web.getLogin((err, data) => {
             type:5
           })
         }
-        dispatch.toServer('C_UPDATE_FRIEND_INFO', 1, {})
+        dispatch.toServer('C_UPDATE_FRIEND_INFO', 1)
       }
       currentWindow = name
       screen.render()
@@ -473,7 +479,7 @@ web.getLogin((err, data) => {
       closeClient()
     })
     dispatch.hook('S_UPDATE_FRIEND_INFO', 1, (event) => {
-      console.log("<"+Object.keys(event.friends).length)
+      console.log("FU<"+Object.keys(event.friends).length)
       for(var c of event.friends){
         friendmap[c.id] = {
           "name":c.name,
@@ -482,11 +488,21 @@ web.getLogin((err, data) => {
         }
       }
     })
+    dispatch.hook('S_FRIEND_LIST', 1, (event) => {
+      console.log("FL<"+Object.keys(event.friends).length)
+      for(var c of event.friends){
+        friendmap[c.id] = {
+          "name":c.name,
+          "desc":`${describe(c)}`,
+          "status": 2
+        }
+      }
+    })
     dispatch.hook('S_GUILD_INFO', 1, (event) => {
       currentGuild = event.id
     })
     dispatch.hook('S_GUILD_MEMBER_LIST', 1, (event) => {
-      console.log("<"+Object.keys(event.members).length)
+      console.log("G<"+Object.keys(event.members).length)
       for(var c of event.members){
         guildmap[c.playerID] = {
           "name":c.name,
