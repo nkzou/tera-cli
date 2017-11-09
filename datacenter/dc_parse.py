@@ -8,7 +8,7 @@ for filename in txts:
     for line in f:
         x = line.split('\t')
         l = list(map((lambda x: x.strip()) , x))
-        o.write("\""+str(l[0])+"\": {name: \""+l[1]+"\", type: \""+l[2]+"\", icon: \""+l[3]+"\", tooltip: \""+l[4]+"\", requiredGender: \""+l[5]+"\", requiredRace: \""+l[6]+"\"},\n")
+        o.write("\""+str(l[0])+"\": {\"name\": \""+l[1]+"\", \"type\": \""+l[2]+"\", \"icon\": \""+l[3]+"\", \"tooltip\": \""+l[4]+"\", \"requiredGender\": \""+l[5]+"\", \"requiredRace\": \""+l[6]+"\"},\n")
     o.write('}\n')
     f.close()
     o.close()

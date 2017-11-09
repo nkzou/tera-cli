@@ -1,12 +1,17 @@
 # Features
 * Extremely lightweight client for TERA
 * Does *not* require TERA to be installed- Runs on Linux, and should run on MacOS as well. (MacOS untested)
-* Simple text interface
+* Simple text interface with mouse controls
 * View Friend list and Guild Member lists
-* Read and send chat messages
+* Send and receive chat messages
+* Send and receive whispers
 * Search the Trade Broker
-* Compatible with most `tera-proxy` modules (ie AutoNegotiate)
 * Inspect players
+* Compatible with most `tera-proxy` modules (ie AutoNegotiate)
+
+# Requirements
+* If on Windows, a terminal emulator that is NOT Windows CMD (Windows Linux Subsystem works decently)
+* Node.js
 
 # Screenshots (Still in Development)
 ## Chat
