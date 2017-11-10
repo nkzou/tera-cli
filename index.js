@@ -399,6 +399,8 @@ web.getLogin((err, data) => {
           })
         }
         dispatch.toServer('C_UPDATE_FRIEND_INFO', 1)
+      } else if (name === "Inventory"){
+
       }
       currentWindow = name
       screen.render()
@@ -524,9 +526,16 @@ web.getLogin((err, data) => {
         content.pushLine("{#FF5694-fg}[<- "+evt.author+"]: "+msg+"{/}")
       }
     })
+    dispatch.hook("S_INVEN", 9, (evt)=>{
+      console.log("INV<"+Object.keys(evt.items).length)
+      for(var item of evt.items){
+        if(itemdc[item.dbid])
+          console.log(""+itemdc[item.dbid].name)
+      }
+    })
   })
   fs.readdirSync('./modules/').forEach(file => {
-      connection.dispatch.load('./modules/' + file, module)
+      connection.dispatch.load('./modules/' + file, module, content)
   })
   srvConn.setTimeout(10 * 1000)
 
