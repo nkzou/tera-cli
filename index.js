@@ -169,7 +169,7 @@ var chatpanel = blessed.box({
     }
   }
 })
-var friend_list = blessed.list({
+var friend_list = blessed.box({
   top: '0%',
   left: '20%',
   width: '40%',
@@ -195,7 +195,7 @@ var friend_list = blessed.list({
     }
   }
 })
-var guild_list = blessed.list({
+var guild_list = blessed.box({
   top: '0%',
   left: '60%',
   width: '40%',
@@ -227,20 +227,24 @@ var guildmap={}
 var currentGuild = null
 
 function updateLists(){
-  friend_list.clearItems()
+  friend_list.setContent("")
   for(var f in friendmap){
-    if(friendmap[f].status == 2) friend_list.add(`* ${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
-    else friend_list.add("{#46FF41-fg}* "+`${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
+    if(friendmap[f].status != 2) friend_list.pushLine("{#46FF41-fg}* "+`${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
   }
-  guild_list.clearItems()
+  for(var f in friendmap){
+    if(friendmap[f].status == 2) friend_list.pushLine(`* ${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
+  }
+  guild_list.setContent("")
   if(currentGuild == null){
     guild_list.add("You are not in a Guild.")
     screen.render()
     return
   }
   for(var m in guildmap){
-    if(guildmap[m].status == 2) guild_list.add(`* ${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
-    else guild_list.add("{#46FF41-fg}* "+`${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
+    if(guildmap[m].status != 2) guild_list.pushLine("{#46FF41-fg}* "+`${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
+  }
+  for(var m in guildmap){
+    if(guildmap[m].status == 2) guild_list.pushLine(`* ${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
   }
   screen.render()
 }
@@ -503,7 +507,7 @@ web.getLogin((err, data) => {
       currentGuild = event.id
     })
     dispatch.hook('S_GUILD_MEMBER_LIST', 1, (event) => {
-      console.log("G<"+Object.keys(event.members).length)
+      console.log("GL<"+Object.keys(event.members).length)
       for(var c of event.members){
         guildmap[c.playerID] = {
           "name":c.name,
@@ -542,5 +546,6 @@ web.getLogin((err, data) => {
 
   srvConn.on('error', (err) => {
     content.pushLine(err)
+    process.exit()
   })
 })
