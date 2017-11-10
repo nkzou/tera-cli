@@ -1,6 +1,6 @@
 # Features
 * Extremely lightweight client for TERA
-* Does *not* require TERA to be installed- Runs on Linux, and should run on MacOS as well. (MacOS untested)
+* Does *not* require TERA to be installed- Runs on Linux, and should run on MacOS as well. Also runs on PHONES with a terminal emulator like android's Termux. (Not even joking, you can login to tera and refresh login buff through your phone)
 * Simple text interface with mouse controls
 * View Friend list and Guild Member lists
 * Send and receive chat messages
