@@ -1,3 +1,6 @@
+# Notice
+Project Abandoned. Explanation is in the Github Repo.
+
 # Features
 * Extremely lightweight client for TERA
 * Does *not* require TERA to be installed- Runs on Linux, and should run on MacOS as well. Also runs on PHONES with a terminal emulator like android's Termux. (Not even joking, you can login to tera and refresh login buff through your phone)
