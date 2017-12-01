@@ -31,11 +31,11 @@ var console = blessed.box({
 
 console.hide()
 screen.append(console)
-
+/*
 console.log = (string) => {
   console.insertLine(0, string)
   screen.render()
-}
+}*/
 screen.key(['C-q'], (ch, key) => {
   console.toggle()
   console.focus()
@@ -236,7 +236,7 @@ function updateLists(){
   }
   guild_list.setContent("")
   if(currentGuild == null){
-    guild_list.add("You are not in a Guild.")
+    guild_list.pushLine("You are not in a Guild.")
     screen.render()
     return
   }
@@ -409,6 +409,7 @@ web.getLogin((err, data) => {
     function closeClient() {
       if (closed) return
       closed = true
+      process.exit()
       content.pushLine("Shutting down TERA-CLI...")
       dispatch.toServer('C_EXIT', 1)
       setTimeout(() => {
@@ -422,7 +423,7 @@ web.getLogin((err, data) => {
     screen.key(['escape', 'C-c'], function(ch, key) {
       return closeClient()
     })
-    dispatch.hook('S_LOGIN_ACCOUNT_INFO', 1, () => {
+    dispatch.hook('S_LOGIN', 1, () => {
       dispatch.toServer('C_GET_USER_LIST', 1)
     })
 
@@ -554,7 +555,7 @@ web.getLogin((err, data) => {
   })
 
   srvConn.on('error', (err) => {
-    content.pushLine(err)
+    console.log(err)
     process.exit()
   })
 })
