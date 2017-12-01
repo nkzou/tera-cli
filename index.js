@@ -374,7 +374,7 @@ web.getLogin((err, data) => {
         unk1: 0,
         unk2: 0,
         language: 2,
-        patchVersion: 6103,
+        patchVersion: 6203,
         name: data.name,
         ticket: new Buffer(data.ticket)
       })
