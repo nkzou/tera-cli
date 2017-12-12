@@ -1,5 +1,5 @@
 # Notice
-Project Abandoned. Explanation is in the Github Repo.
+Project Discontinued. Explanation is in the Github Repo.
 
 # Features
 * Extremely lightweight client for TERA
