@@ -6,7 +6,7 @@ https://nullkz.github.io/tera-cli/ for more info
 
 To use datacenter parsing, unzip the .json files in ./datacenter/itemdc.zip and put them in ./datacenter/
 
-# PROJECT ABANDONED
+# Project Discontinued
 
 Opcodes are gone due to a security patch: Not worth the time investment to map them all out.
 
