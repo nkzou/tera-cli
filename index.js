@@ -1,12 +1,9 @@
 const fs = require('fs')
 const config = require('./config/config.json')
-const itemdc = require('./datacenter/fullitems-'+config.region)
+const itemdc = require('./datacenter/fullitems-' + config.region)
 const servers = require('./config/servers.json')
 const webClient = require('tera-auth-ticket')
-const {
-  Connection,
-  FakeClient
-} = require('tera-proxy-game')
+const { Connection, FakeClient } = require('tera-proxy-game')
 var npmstring = require('string')
 var blessed = require('blessed')
 var screen = blessed.screen({
@@ -41,7 +38,7 @@ screen.key(['C-q'], (ch, key) => {
   console.focus()
   console.setFront()
   screen.render()
-});
+})
 
 //Menu
 var menu = blessed.list({
@@ -50,7 +47,7 @@ var menu = blessed.list({
   width: '20%',
   height: '30%',
   align: 'center',
-  items: ["Home", "Chat", "Friend/Guild List", "Inventory", "Crafting", "Trade Broker", "Inspector"],
+  items: ['Home', 'Chat', 'Friend/Guild List', 'Inventory', 'Crafting', 'Trade Broker', 'Inspector'],
   tags: true,
   mouse: true,
   interactive: true,
@@ -77,12 +74,7 @@ var info = blessed.list({
   left: '0',
   width: '20%',
   height: '70%',
-  items: ["Current Information",
-    "Character Name:",
-    " > Redacted.Name",
-    "Location:",
-    " > Highwatch"
-  ],
+  items: ['Current Information', 'Character Name:', ' > Redacted.Name', 'Location:', ' > Highwatch'],
   tags: true,
   border: {
     type: 'line'
@@ -103,7 +95,7 @@ screen.append(info)
 
 //contentbox
 var content = blessed.log({
-  content: "",
+  content: '',
   top: '0%',
   left: '20%',
   width: '80%',
@@ -149,7 +141,7 @@ var chat = blessed.textbox({
   }
 })
 var chatpanel = blessed.box({
-  content: "{#46FF41-fg}[Guild]{/}",
+  content: '{#46FF41-fg}[Guild]{/}',
   top: '90%',
   left: '20%',
   width: '15%',
@@ -179,13 +171,13 @@ var friend_list = blessed.box({
   tags: true,
   mouse: true,
   keys: true,
-  scrollable:true,
+  scrollable: true,
   interactive: true,
   border: {
     type: 'line'
   },
   style: {
-    selected:{
+    selected: {
       fg: '#FFC0CC'
     },
     fg: 'white',
@@ -206,12 +198,12 @@ var guild_list = blessed.box({
   mouse: true,
   keys: true,
   interactive: true,
-  scrollable:true,
+  scrollable: true,
   border: {
     type: 'line'
   },
   style: {
-    selected:{
+    selected: {
       fg: '#FFC0CC'
     },
     fg: 'white',
@@ -222,29 +214,29 @@ var guild_list = blessed.box({
   }
 })
 
-var friendmap={}
-var guildmap={}
+var friendmap = {}
+var guildmap = {}
 var currentGuild = null
 
-function updateLists(){
-  friend_list.setContent("")
-  for(var f in friendmap){
-    if(friendmap[f].status != 2) friend_list.pushLine("{#46FF41-fg}* "+`${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
+function updateLists() {
+  friend_list.setContent('')
+  for (var f in friendmap) {
+    if (friendmap[f].status != 2) friend_list.pushLine('{#46FF41-fg}* ' + `${friendmap[f].name} {|} [${friendmap[f].desc}]` + '{/}')
   }
-  for(var f in friendmap){
-    if(friendmap[f].status == 2) friend_list.pushLine(`* ${friendmap[f].name} {|} [${friendmap[f].desc}]`+"{/}")
+  for (var f in friendmap) {
+    if (friendmap[f].status == 2) friend_list.pushLine(`* ${friendmap[f].name} {|} [${friendmap[f].desc}]` + '{/}')
   }
-  guild_list.setContent("")
-  if(currentGuild == null){
-    guild_list.pushLine("You are not in a Guild.")
+  guild_list.setContent('')
+  if (currentGuild == null) {
+    guild_list.pushLine('You are not in a Guild.')
     screen.render()
     return
   }
-  for(var m in guildmap){
-    if(guildmap[m].status != 2) guild_list.pushLine("{#46FF41-fg}* "+`${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
+  for (var m in guildmap) {
+    if (guildmap[m].status != 2) guild_list.pushLine('{#46FF41-fg}* ' + `${guildmap[m].name} {|} [${guildmap[m].desc}]` + '{/}')
   }
-  for(var m in guildmap){
-    if(guildmap[m].status == 2) guild_list.pushLine(`* ${guildmap[m].name} {|} [${guildmap[m].desc}]`+"{/}")
+  for (var m in guildmap) {
+    if (guildmap[m].status == 2) guild_list.pushLine(`* ${guildmap[m].name} {|} [${guildmap[m].desc}]` + '{/}')
   }
   screen.render()
 }
@@ -254,7 +246,7 @@ screen.append(chat)
 screen.append(friend_list)
 screen.append(guild_list)
 
-var currentWindow = "Home"
+var currentWindow = 'Home'
 function hideAll() {
   content.hide()
   //chat.hide()
@@ -284,8 +276,10 @@ const chatChannels = {
 function parseTeraChat(evt) {
   msg = chatChannels[evt.channel]
   msg += '[' + evt.authorName + ']: '
-  msg += npmstring(evt.message).stripTags().decodeHTMLEntities().s
-  return msg + "{/}"
+  msg += npmstring(evt.message)
+    .stripTags()
+    .decodeHTMLEntities().s
+  return msg + '{/}'
 }
 var currentChatChannel = 2
 var whisperTarget = ''
@@ -307,13 +301,13 @@ chat.on('keypress', () => {
       screen.render()
     })
   }
-  if (c.startsWith('/w')){
+  if (c.startsWith('/w')) {
     currentChatChannel = -1
     var count = (c.match(/ /g) || []).length
-    if(count >= 2){
+    if (count >= 2) {
       var res = c.split(' ')
       whisperTarget = res[1]
-      chatpanel.setContent('{#FF5694-fg}[-> '+whisperTarget+']{/}')
+      chatpanel.setContent('{#FF5694-fg}[-> ' + whisperTarget + ']{/}')
       setImmediate(() => {
         chat.clearValue()
         screen.render()
@@ -328,7 +322,7 @@ const describe = (() => {
 
   return function describe(character) {
     let description = ''
-    description += (character.level + " ")
+    description += character.level + ' '
     const race = races[character.race] || '?'
     const gender = genders[character.gender] || '?'
 
@@ -380,27 +374,26 @@ web.getLogin((err, data) => {
       })
     })
 
-    menu.on('select', (item) => {
+    menu.on('select', item => {
       var name = item.content
-      if(name == currentWindow) return
+      if (name == currentWindow) return
       hideAll()
-      if (name === "Chat") {
+      if (name === 'Chat') {
         content.show()
         //chat.show()
         //chatpanel.show()
-      } else if (name === "Friend/Guild List") {
+      } else if (name === 'Friend/Guild List') {
         updateLists()
         friend_list.show()
         guild_list.show()
-        if(currentGuild != null){
+        if (currentGuild != null) {
           dispatch.toServer('C_REQUEST_GUILD_INFO', 1, {
             guildId: currentGuild,
-            type:5
+            type: 5
           })
         }
         dispatch.toServer('C_UPDATE_FRIEND_INFO', 1)
-      } else if (name === "Inventory"){
-
+      } else if (name === 'Inventory') {
       }
       currentWindow = name
       screen.render()
@@ -410,10 +403,10 @@ web.getLogin((err, data) => {
       if (closed) return
       closed = true
       process.exit()
-      content.pushLine("Shutting down TERA-CLI...")
+      content.pushLine('Shutting down TERA-CLI...')
       dispatch.toServer('C_EXIT', 1)
       setTimeout(() => {
-        content.pushLine("No Response from Server- Force Exiting")
+        content.pushLine('No Response from Server- Force Exiting')
         setTimeout(killClient, 1000)
       }, 5000)
     }
@@ -423,11 +416,11 @@ web.getLogin((err, data) => {
     screen.key(['escape', 'C-c'], function(ch, key) {
       return closeClient()
     })
-    dispatch.hook('S_LOGIN', 1, () => {
+    dispatch.hook('S_LOGIN', 10, () => {
       dispatch.toServer('C_GET_USER_LIST', 1)
     })
 
-    dispatch.hook('S_GET_USER_LIST', 5, (event) => {
+    dispatch.hook('S_GET_USER_LIST', 14, event => {
       const characters = new Map()
       for (const character of event.characters) {
         characters.set(character.name.toLowerCase(), {
@@ -435,7 +428,7 @@ web.getLogin((err, data) => {
           description: `${character.name} [${describe(character)}]`
         })
       }
-      content.pushLine("Characters:")
+      content.pushLine('Characters:')
       for (const char of characters.values()) {
         content.pushLine(`> ${char.description} (id: ${char.id})`)
       }
@@ -458,23 +451,23 @@ web.getLogin((err, data) => {
       dispatch.toServer('C_PONG', 1)
     })
 
-    dispatch.hook('S_SIMPLE_TIP_REPEAT_CHECK', 2, (event) => {
+    dispatch.hook('S_SIMPLE_TIP_REPEAT_CHECK', 2, event => {
       dispatch.toServer('C_SIMPLE_TIP_REPEAT_CHECK', 1, {
         id: event.id
       })
     })
-    dispatch.hook('S_CHAT', 1, (event) => {
+    dispatch.hook('S_CHAT', 2, event => {
       content.pushLine(parseTeraChat(event))
     })
     chat.on('submit', () => {
       var msg = chat.getValue()
-      if(msg.startsWith('/')) return
-      if(currentChatChannel >= 0){
+      if (msg.startsWith('/')) return
+      if (currentChatChannel >= 0) {
         dispatch.toServer('C_CHAT', 1, {
           channel: currentChatChannel,
           message: msg
         })
-      } else if (currentChatChannel == -1){
+      } else if (currentChatChannel == -1) {
         dispatch.toServer('C_WHISPER', 1, {
           target: whisperTarget,
           message: msg
@@ -486,57 +479,56 @@ web.getLogin((err, data) => {
     client.on('close', () => {
       closeClient()
     })
-    dispatch.hook('S_UPDATE_FRIEND_INFO', 1, (event) => {
-      console.log("FU<"+Object.keys(event.friends).length)
-      for(var c of event.friends){
+    dispatch.hook('S_UPDATE_FRIEND_INFO', 1, event => {
+      console.log('FU<' + Object.keys(event.friends).length)
+      for (var c of event.friends) {
         friendmap[c.id] = {
-          "name":c.name,
-          "desc":`${describe(c)}`,
-          "status": c.status
+          name: c.name,
+          desc: `${describe(c)}`,
+          status: c.status
         }
       }
     })
-    dispatch.hook('S_FRIEND_LIST', 1, (event) => {
-      console.log("FL<"+Object.keys(event.friends).length)
-      for(var c of event.friends){
+    dispatch.hook('S_FRIEND_LIST', 1, event => {
+      console.log('FL<' + Object.keys(event.friends).length)
+      for (var c of event.friends) {
         friendmap[c.id] = {
-          "name":c.name,
-          "desc":`${describe(c)}`,
-          "status": 2
+          name: c.name,
+          desc: `${describe(c)}`,
+          status: 2
         }
       }
     })
-    dispatch.hook('S_GUILD_INFO', 1, (event) => {
+    dispatch.hook('S_GUILD_INFO', 1, event => {
       currentGuild = event.id
     })
-    dispatch.hook('S_GUILD_MEMBER_LIST', 1, (event) => {
-      console.log("GL<"+Object.keys(event.members).length)
-      for(var c of event.members){
+    dispatch.hook('S_GUILD_MEMBER_LIST', 1, event => {
+      console.log('GL<' + Object.keys(event.members).length)
+      for (var c of event.members) {
         guildmap[c.playerID] = {
-          "name":c.name,
-          "desc":`${describe(c)}`,
-          "status": c.status
+          name: c.name,
+          desc: `${describe(c)}`,
+          status: c.status
         }
       }
     })
-    dispatch.hook("S_WHISPER", 1, (evt)=>{
+    dispatch.hook('S_WHISPER', 2, evt => {
       var msg = npmstring(evt.message).stripTags().decodeHTMLEntities().s
-      if(config.character === evt.author){
-        content.pushLine("{#FF5694-fg}[-> "+evt.recipient+"]: "+msg+"{/}")
-      } else{
-        content.pushLine("{#FF5694-fg}[<- "+evt.author+"]: "+msg+"{/}")
+      if (config.character === evt.authorName) {
+        content.pushLine('{#FF5694-fg}[-> ' + evt.recipient + ']: ' + msg + '{/}')
+      } else {
+        content.pushLine('{#FF5694-fg}[<- ' + evt.authorName + ']: ' + msg + '{/}')
       }
     })
-    dispatch.hook("S_INVEN", 9, (evt)=>{
-      console.log("INV<"+Object.keys(evt.items).length)
-      for(var item of evt.items){
-        if(itemdc[item.dbid])
-          console.log(""+itemdc[item.dbid].name)
+    dispatch.hook('S_INVEN', 13, evt => {
+      console.log('INV<' + Object.keys(evt.items).length)
+      for (var item of evt.items) {
+        if (itemdc[item.id]) console.log('' + itemdc[item.id].name)
       }
     })
   })
   fs.readdirSync('./modules/').forEach(file => {
-      connection.dispatch.load('./modules/' + file, module, content)
+    connection.dispatch.load('./modules/' + file, module, content)
   })
   srvConn.setTimeout(10 * 1000)
 
@@ -554,7 +546,7 @@ web.getLogin((err, data) => {
     process.exit()
   })
 
-  srvConn.on('error', (err) => {
+  srvConn.on('error', err => {
     console.log(err)
     process.exit()
   })
