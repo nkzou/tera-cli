@@ -377,7 +377,7 @@ web.getLogin((err, data) => {
         unk1: 0,
         unk2: 0,
         language: 2,
-        patchVersion: 6303,
+        patchVersion: config.patchVersion,
         name: data.name,
         ticket: new Buffer(data.ticket)
       })
@@ -460,13 +460,11 @@ web.getLogin((err, data) => {
     dispatch.hook('S_PING', 1, () => {
       dispatch.toServer('C_PONG', 1)
     })
-    /*
     dispatch.hook('S_SIMPLE_TIP_REPEAT_CHECK', 2, (event) => {
       dispatch.toServer('C_SIMPLE_TIP_REPEAT_CHECK', 1, {
         id: event.id
       })
     })
-    */
     dispatch.hook('S_CHAT', 2, (event) => {
       content.pushLine(parseTeraChat(event))
     })
