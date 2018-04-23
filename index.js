@@ -426,11 +426,11 @@ web.getLogin((err, data) => {
     screen.key(['escape', 'C-c'], function(ch, key) {
       return closeClient()
     })
-    dispatch.hook('S_LOGIN', 1, () => {
+    dispatch.hook('S_LOGIN', 10, () => {
       dispatch.toServer('C_GET_USER_LIST', 1)
     })
 
-    dispatch.hook('S_GET_USER_LIST', 5, (event) => {
+    dispatch.hook('S_GET_USER_LIST', 14, (event) => {
       const characters = new Map()
       for (const character of event.characters) {
         characters.set(character.name.toLowerCase(), {
@@ -467,7 +467,7 @@ web.getLogin((err, data) => {
       })
     })
     */
-    dispatch.hook('S_CHAT', 1, (event) => {
+    dispatch.hook('S_CHAT', 2, (event) => {
       content.pushLine(parseTeraChat(event))
     })
     chat.on('submit', () => {
@@ -528,7 +528,7 @@ web.getLogin((err, data) => {
         }
       }
     })
-    dispatch.hook("S_WHISPER", 1, (evt)=>{
+    dispatch.hook("S_WHISPER", 2, (evt)=>{
       var msg = npmstring(evt.message).stripTags().decodeHTMLEntities().s
       if(config.character === evt.author){
         content.pushLine("{#FF5694-fg}[-> "+evt.recipient+"]: "+msg+"{/}")
@@ -536,7 +536,7 @@ web.getLogin((err, data) => {
         content.pushLine("{#FF5694-fg}[<- "+evt.author+"]: "+msg+"{/}")
       }
     })
-    dispatch.hook("S_INVEN", 9, (evt)=>{
+    dispatch.hook("S_INVEN", 12, (evt)=>{
       console.log("INV<"+Object.keys(evt.items).length)
       for(var item of evt.items){
         if(itemdc[item.dbid])
