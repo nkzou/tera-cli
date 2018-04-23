@@ -31,11 +31,11 @@ var console = blessed.box({
 
 console.hide()
 screen.append(console)
-/*
+
 console.log = (string) => {
   console.insertLine(0, string)
   screen.render()
-}*/
+}
 screen.key(['C-q'], (ch, key) => {
   console.toggle()
   console.focus()
@@ -348,11 +348,14 @@ const describe = (() => {
 })()
 
 const srv = servers[config.server]
-const web = new webClient(srv.srv, config.email, config.pass)
+const web = new webClient(config.email, config.pass)
 web.getLogin((err, data) => {
   if (err) return
 
-  const connection = new Connection()
+  const connection = new Connection({
+    "console": false,
+    "protocol_data": {},
+  })
   const client = new FakeClient(connection)
   const srvConn = connection.connect(client, {
     host: srv.host,
@@ -374,7 +377,7 @@ web.getLogin((err, data) => {
         unk1: 0,
         unk2: 0,
         language: 2,
-        patchVersion: 6203,
+        patchVersion: 6303,
         name: data.name,
         ticket: new Buffer(data.ticket)
       })
@@ -457,12 +460,13 @@ web.getLogin((err, data) => {
     dispatch.hook('S_PING', 1, () => {
       dispatch.toServer('C_PONG', 1)
     })
-
+    /*
     dispatch.hook('S_SIMPLE_TIP_REPEAT_CHECK', 2, (event) => {
       dispatch.toServer('C_SIMPLE_TIP_REPEAT_CHECK', 1, {
         id: event.id
       })
     })
+    */
     dispatch.hook('S_CHAT', 1, (event) => {
       content.pushLine(parseTeraChat(event))
     })
@@ -484,7 +488,12 @@ web.getLogin((err, data) => {
       chat.focus()
     })
     client.on('close', () => {
-      closeClient()
+      try{
+        closeClient()
+      }
+      catch(err){
+        killClient()
+      }
     })
     dispatch.hook('S_UPDATE_FRIEND_INFO', 1, (event) => {
       console.log("FU<"+Object.keys(event.friends).length)
@@ -546,7 +555,7 @@ web.getLogin((err, data) => {
 
   srvConn.on('timeout', () => {
     content.pushLine('<timeout>')
-    closeClient()
+    process.exit()
   })
 
   srvConn.on('close', () => {

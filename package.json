@@ -2,9 +2,9 @@
 	"dependencies": {
 		"blessed": "^0.1.81",
 		"string": "^3.3.3",
-		"tera-auth-ticket": "github:mathicha/tera-auth-ticket",
+		"tera-auth-ticket": "github:meishuu/tera-auth-ticket",
 		"tera-data": "github:meishuu/tera-data",
-		"tera-data-parser": "github:meishuu/tera-data-parser-js",
-		"tera-proxy-game": "github:meishuu/tera-proxy-game"
+		"tera-data-parser": "github:pinkipi/tera-data-parser-js",
+		"tera-proxy-game": "github:hackerman-caali/tera-proxy-game"
 	}
 }
