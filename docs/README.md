@@ -1,7 +1,5 @@
 # Notice
-~~Project Discontinued. Explanation is in the Github Repo.~~
-
-We're Back.
+Project Discontinued. Explanation is in the Github Repo, linked to the side.
 
 # Features
 * Extremely lightweight client for TERA

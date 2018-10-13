@@ -6,8 +6,8 @@ https://nullkz.github.io/tera-cli/ for more info
 
 To use datacenter parsing, unzip the .json files in ./datacenter/itemdc.zip and put them in ./datacenter/
 
-# Awakening Again
+# Project Discontinued
 
-Project is back, and I'll try to make the whole thing work again. Development will continue for however long I remain interested in TERA. Thanks o/
+In light of recent events with EnMasse Entertainment and their DMCA streak, all development on this project is discontinued. 
 
-asthetiks
+This repository will be archived and read-only.
